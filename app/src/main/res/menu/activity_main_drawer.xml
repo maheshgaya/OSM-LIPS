@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_black_18dp"
+            android:title="@string/map_activity" />
+    </group>
+
+    <item android:title="Sensors">
+        <menu>
+            <item
+                android:id="@+id/nav_location_sensor"
+                android:icon="@drawable/ic_my_location_black_18dp"
+                android:title="@string/location_activity" />
+            <item
+                android:id="@+id/nav_wifi_scanner"
+                android:icon="@drawable/ic_wifi_black_18dp"
+                android:title="@string/wifi_scanner_activity" />
+        </menu>
+    </item>
+
+</menu>

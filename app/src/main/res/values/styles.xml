@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorMainBackground</item>
+        <item name="colorPrimary">@color/colorGrey700</item>
+        <item name="colorPrimaryDark">@color/colorGrey900</item>
+        <item name="colorAccent">@color/colorAccentLightBlue200</item>
+        <item name="android:windowBackground">@color/colorGrey50</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -19,14 +19,16 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="GetLocationActivityTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">#388E3C</item>
-        <item name="colorPrimaryDark">#1B5E20</item>
-        <item name="colorAccent">#2196F3</item>
+        <item name="colorPrimary">@color/colorGreen700</item>
+        <item name="colorPrimaryDark">@color/colorGreen900</item>
+        <item name="colorAccent">@color/colorAccentBlue200</item>
+        <item name="android:windowBackground">@color/colorGreen50</item>
     </style>
 
     <style name="WifiScannerActivityTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">#5D4037</item>
-        <item name="colorPrimaryDark">#3E2723</item>
-        <item name="colorAccent">#2196F3</item>
+        <item name="colorPrimary">@color/colorBrown700</item>
+        <item name="colorPrimaryDark">@color/colorBrown900</item>
+        <item name="colorAccent">@color/colorAccentRed200</item>
+        <item name="android:windowBackground">@color/colorBrown50</item>
     </style>
 </resources>

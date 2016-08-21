@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1976D2</color>
-    <color name="colorPrimaryDark">#0D47A1</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorMainBackground">#E3F2FD</color>
-    <color name="colorLocationBackground">#E8F5E9</color>
-    <color name="colorWifiTitleText">#5D4037</color>
-    <color name="colorWifiBackground">#EFEBE9</color>
-    <color name="colorWifiDarkBackground">#D7CCC8</color>
-
-    <color name="colorLocationButton">#81C784</color>
-    <color name="colorMainButton">#4FC3F7</color>
-
-    <color name="colorTextWhite">#FFFFFF</color>
-    <color name="colorText">#000000</color>
-    <color name="colorTextHint">#ff4081</color>
-    <color name="colorTitleText">#d25959</color>
-
     <!-- MATERIAL DESIGN COLORS -->
     <!-- Black -->
     <color name="colorBlack">#000000</color>

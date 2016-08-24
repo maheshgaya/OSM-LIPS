@@ -3,6 +3,12 @@
     <string name="vector_tiles_key">vector-tiles-Pfuh7pk</string>
     <string name="app_name">Open LIPS</string>
 
+    <string-array name="style_array">
+        <item>Bubble Wrap</item>
+        <item>Cinnabar</item>
+        <item>Refill</item>
+    </string-array>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

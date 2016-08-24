@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Spinner;
 
 /**
  * edu.drake.research.android.openlips
@@ -25,6 +26,10 @@ public class BaseActivity extends AppCompatActivity
 
     //logging members
     private final String TAG = this.getClass().getSimpleName();
+
+    //Action Bar
+    protected MenuItem styleItem;
+    protected Spinner spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
@@ -62,6 +67,9 @@ public class BaseActivity extends AppCompatActivity
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Configure the search info and add any event listeners...
+
+        styleItem = menu.findItem(R.id.spinner);
+        spinner = (Spinner) MenuItemCompat.getActionView(styleItem);
 
         return true;
     }

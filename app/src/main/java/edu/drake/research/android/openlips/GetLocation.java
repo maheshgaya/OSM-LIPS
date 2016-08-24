@@ -63,6 +63,7 @@ public class GetLocation extends BaseActivity implements
 
     //members for location services
     protected GoogleApiClient mGoogleApiClient;
+
     //protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
     private AddressResultReceiver mAddressResultReceiver;
@@ -103,19 +104,16 @@ public class GetLocation extends BaseActivity implements
     private boolean mRequestingLocationUpdates;
 
 
+    /*
+    * Set the view for location services activity
+    * Makes connection for FusedLocationProviderApi
+    * Makes initial call for getting location (Gets the last known location)
+    * */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //setTheme(R.style.GetLocationActivityTheme);
         super.onCreate(savedInstanceState);
-
-        /*
-        onCreate for app
-        make connection to UI
-        make connection to Google Api Client
-        assign miscellaneous variables
-         */
-
         setContentView(R.layout.activity_location_services);
 
         //Get Navigation Drawer
@@ -170,6 +168,9 @@ public class GetLocation extends BaseActivity implements
     }
 
     //Toolbar
+    /*
+     * Handles the buttons on the Action Bar
+     * */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: method executed");
@@ -180,12 +181,15 @@ public class GetLocation extends BaseActivity implements
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            //opens setting activity
             Log.d(TAG, "onOptionsItemSelected: action_settings selected");
             startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
         } else if (id == R.id.action_select_wifi){
+            //opens wifi selection activity (context on Wifi Activity)
             Log.d(TAG, "onOptionsItemSelected: action_select_wifi selected");
             return true;
         } else if (id == R.id.action_refresh_location){
+            //gets updates on current location
             Log.d(TAG, "onOptionsItemSelected: action_refresh_location tapped");
             if (checkPermission()){
                 Log.d(TAG, "onClick: case R.id.btn_get_location: checkPermission() is True");
@@ -217,6 +221,10 @@ public class GetLocation extends BaseActivity implements
 
 
 
+    /*
+    * Gets updated values from Bundle
+    * Saved values in bundle if the phone is rotated
+    * */
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null){
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)){
@@ -234,6 +242,9 @@ public class GetLocation extends BaseActivity implements
         }
     }
 
+    /*
+    * Stops location updates
+    * */
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause: method executed");
@@ -242,12 +253,17 @@ public class GetLocation extends BaseActivity implements
 
     }
 
-
+    /*
+     * Stops location updates
+     * */
     private void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
     }
 
+    /*
+    * If not already connected, app connects to Google Api Client to get location updates
+    * */
     @Override
     protected void onStart() {
         Log.d(TAG, "onStart: method executed");
@@ -256,9 +272,11 @@ public class GetLocation extends BaseActivity implements
             mGoogleApiClient.connect();
         }
         super.onStart();
-
-
     }
+
+    /*
+    * Gets Location updates if connected and if RequestingLocationUpdates is True
+    * */
     @Override
     protected void onResume(){
         super.onResume();
@@ -268,6 +286,9 @@ public class GetLocation extends BaseActivity implements
 
     }
 
+    /*
+    * Disconnects Google Api Client
+    * */
     @Override
     protected void onStop() {
         Log.d(TAG, "onStop: method executed");
@@ -275,9 +296,11 @@ public class GetLocation extends BaseActivity implements
             mGoogleApiClient.disconnect();
         }
         super.onStop();
-
     }
 
+    /*
+    * Fetches location updates as intent in the background
+    * */
     protected void startIntentService(){
         Intent intent = new Intent(GetLocation.this, FetchAddressIntentService.class);
         mAddressResultReceiver = new AddressResultReceiver(new Handler());
@@ -286,8 +309,12 @@ public class GetLocation extends BaseActivity implements
         startService(intent);
     }
 
-
-
+    /*
+    * Gets the last known location
+    * if permission is granted
+    * otherwise it requests for permission
+    * Then if answer is not null, it updates the UI
+    * */
     public void getLastKnownLocation(){
         if (checkPermission()) {
             Log.d(TAG, "onConnected: checkPermission() is True");
@@ -303,6 +330,9 @@ public class GetLocation extends BaseActivity implements
         }
     }
 
+    /*
+    * Creates a GoogleApiClient instance
+    * */
     protected synchronized void buildGoogleApiClient(){
         Log.d(TAG, "buildGoogleApiClient: method executed");
         //create a GoogleApiClient Instance if it is null
@@ -315,6 +345,9 @@ public class GetLocation extends BaseActivity implements
         }
     }
 
+    /*
+    * creates a builder for Location Settings Request
+    * */
     protected void buildLocationSettingsRequest(){
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest
                 .Builder()
@@ -322,6 +355,10 @@ public class GetLocation extends BaseActivity implements
         mLocationSettingsRequest = builder.build();
     }
 
+    /*
+    * Check if location is permitted in System Settings
+    * Useful for API 21 and above
+    * */
     protected void checkLocationSettings(){
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient,
@@ -472,7 +509,6 @@ public class GetLocation extends BaseActivity implements
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (mView != null) {
                         Snackbar.make(mView, "Permission Granted, Now you can access location data.", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
-
                     }
                 }
                 break;

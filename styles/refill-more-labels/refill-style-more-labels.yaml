@@ -368,14 +368,16 @@ textures:
 
 sources:
     osm:
-        type: TopoJSON #GeoJSON, MVT, TopoJSON
-        url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-W2tPU-Y
-        # url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-W2tPU-Y
-        # url:  http://vector.dev.mapzen.com/osm/all/{z}/{x}/{y}.topojson
-        # url:  //localhost:8080//osm/all/{z}/{x}/{y}.topojson
-        # type: MVT
-        # url:  http://vector.mapzen.com/osm/all/{z}/{x}/{y}.mvt
-        max_zoom: 16
+        #type: TopoJSON #GeoJSON, MVT, TopoJSON
+        #url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
+        #url: '//vector.dev.mapzen.com/osm/all/{z}/{x}/{y}.topojson'
+        #url:  //localhost:8080/osm/all/{z}/{x}/{y}.json
+        #max_zoom: 16
+        type: MVT
+        url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.mvt
+        max_zoom: 24
+        url_params:
+            api_key: vector-tiles-Pfuh7pk
 
     # # Only enable this for local debug, should not be enabled for prod (app inserts these at runtime)
     # # These are all in San Francisco, California

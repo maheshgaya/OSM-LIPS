@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/OpenLIPS.iml" filepath="$PROJECT_DIR$/OpenLIPS.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/osmlips/osmlips.iml" filepath="$PROJECT_DIR$/osmlips/osmlips.iml" />
     </modules>
   </component>
 </project>

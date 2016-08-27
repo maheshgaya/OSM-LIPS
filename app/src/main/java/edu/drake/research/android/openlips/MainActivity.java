@@ -1,5 +1,6 @@
 package edu.drake.research.android.openlips;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -7,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,17 +27,21 @@ import com.mapzen.android.graphics.model.MapStyle;
 import com.mapzen.android.graphics.model.Marker;
 import com.mapzen.android.graphics.model.RefillStyle;
 import com.mapzen.tangram.LngLat;
+import com.mapzen.tangram.MapController;
+import com.mapzen.tangram.MapView;
 
-public class MainActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends BaseActivity implements MapView.OnMapReadyCallback{
 
 
     //logging members
     private final String TAG = this.getClass().getSimpleName();
 
     //Map members
-    private MapzenMap map;
-    private MapFragment mapFragment;
-    private boolean enableLocationOnResume = false;
+    private MapView view;
+    private MapController map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemSele
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
 
 
@@ -67,85 +73,85 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemSele
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.style_array, android.R.layout.simple_spinner_item);
+        // Our MapView is declared in the layout file.
+        view = (MapView)findViewById(R.id.map);
 
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Lifecycle events from the Activity must be forwarded to the MapView.
+        view.onCreate(savedInstanceState);
 
-        //spinner.setAdapter(adapter);
-        //spinner.setOnItemSelectedListener(this);
-
-        mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
-        mapFragment.getMapAsync(new RefillStyle(), new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(MapzenMap map) {
-                Log.e(TAG, "onMapReady: method executed");
-                MainActivity.this.map = map;
-                configureMap(map);
-                //map.setMyLocationEnabled(true);
-                map.setPosition(new LngLat(-93.6518900, 41.6013800));
-                map.setRotation(0f);
-                map.setZoom(3f);
-                map.setTilt(0f);
-
-
-
-            }
-        });
+        // This starts a background process to set up the map.
+        view.getMapAsync(this, "cinnabar-style-more-labels.yaml");
 
     }
 
-    private void configureMap(MapzenMap map) {
-        map.addMarker(new Marker(-93.6518900, 41.6013800));
+    @Override
+    public void onMapReady(MapController mapController) {
+        // We receive a MapController object in this callback when the map is ready for use.
+        map = mapController;
+        map.setZoom(15);
+        map.setPosition(new LngLat(-93.6518857, 41.601378));
     }
 
-    private void changeMapStyle(MapStyle style) {
-        if (map != null) {
-            map.setStyle(style);
-        }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: method executed");
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Log.d(TAG, "onOptionsItemSelected: action_settings selected");
+            startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+        } else if (id == R.id.action_select_wifi){
+            Log.d(TAG, "onOptionsItemSelected: action_select_wifi selected");
+            return true;
+        } else if (id == R.id.action_search){
+            Log.d(TAG, "onOptionsItemSelected: action_search selected");
+        }/*
+        else if (id == R.id.menuBubbleWrapStyle){
+            Log.d(TAG, "onOptionsItemSelected: bubbleWrap executed");
+            changeMapStyle(new BubbleWrapStyle());
+        } else if (id == R.id.menuCinnabarStyle){
+            Log.d(TAG, "onOptionsItemSelected: cinnabar executed");
+            changeMapStyle(new CinnabarStyle());
+        } else if (id == R.id.menuRefillStyle){
+            Log.d(TAG, "onOptionsItemSelected: refill executed");
+            changeMapStyle(new RefillStyle());
+        }*/
+
+        return super.onOptionsItemSelected(item);
     }
 
 
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-            case 0:
-                changeMapStyle(new BubbleWrapStyle());
-                break;
-            case 1:
-                changeMapStyle(new CinnabarStyle());
-                break;
-            case 2:
-                changeMapStyle(new RefillStyle());
-                break;
-            default:
-                changeMapStyle(new BubbleWrapStyle());
-                break;
-        }
-    }
 
 
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Do nothing.
-    }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        /*
-        if (map.isMyLocationEnabled()) {
-            map.setMyLocationEnabled(false);
-            enableLocationOnResume = true;
-        }
-        */
+        view.onPause();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        /*
-        if (enableLocationOnResume) {
-            map.setMyLocationEnabled(true);
-        }
-        */
+        view.onResume();
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        view.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        view.onLowMemory();
     }
 }

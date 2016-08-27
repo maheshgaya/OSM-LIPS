@@ -24,6 +24,28 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#80000000"
+        android:layout_gravity="bottom|start">
+        <TextView
+            android:id="@+id/txt_sensor_readings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp"
+            android:text="Current Information"/>
+        <TextView
+            android:id="@+id/txt_log_lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:text="Accelerometer: 0;\nMagnetic Field: 0;\nOrientation: 0;\nProximity: 0;\nLongitude: current; \nLatitude: current"/>
+    </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

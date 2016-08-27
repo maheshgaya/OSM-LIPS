@@ -68,9 +68,6 @@ public class BaseActivity extends AppCompatActivity
 
         // Configure the search info and add any event listeners...
 
-        //styleItem = menu.findItem(R.id.spinner);
-        //spinner = (Spinner) MenuItemCompat.getActionView(styleItem);
-
         return true;
     }
 

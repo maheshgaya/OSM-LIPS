@@ -3,6 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:showAsAction="ifRoom"
+        android:title="@string/titleStyle">
+
+        <menu>
+            <item
+                android:id="@+id/menuBubbleWrapStyle"
+                android:title="@string/bubbleWrapStyle"/>
+            <item
+                android:id="@+id/menuCinnabarStyle"
+                android:title="@string/cinnabarStyle"/>
+            <item
+                android:id="@+id/menuRefillStyle"
+                android:title="@string/refillStyle"/>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/action_search"

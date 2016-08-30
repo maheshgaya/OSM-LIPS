@@ -1,5 +1,6 @@
 # OpenLIPS
 LIPS (Learning-based Indoor Positioning System) with OSM (Open Street Map)
+
 This is a research project for indoor GPS. It is an extension of [LIPS](https://github.com/davidmascharka/LIPS), 
 originally created by [David Mascharka](https://github.com/davidmascharka), 
 where we are including OpenStreetMap data into the project. 

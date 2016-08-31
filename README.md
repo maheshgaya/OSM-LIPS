@@ -9,3 +9,7 @@ Currently, we are working on getting setup for using the OSM map. We are using M
 libraries to respond to user interaction.  In the future, we will start 
 adding the machine learning algorithms for the Indoor Locationalization system, and we will also collect new data,
 and have a database.
+
+##Using source with Android Studio
+1. Download/Clone the this project.
+2. In Android Studio, do File -> New -> Import Project. Use the directory of the project.

@@ -11,5 +11,7 @@ adding the machine learning algorithms for the Indoor Locationalization system, 
 and have a database.
 
 ##Using source code with Android Studio
-1. Download/Clone the this project.
+1. Download/Clone this project.
 2. In Android Studio, do File -> New -> Import Project. Use the directory of the project.
+3. Build the project.
+4. Once you build this project, copy the files in the Walkabout Style Folder to "osmlips/build/intermediates/exploded-aar/com.mapzen.tangram/tangram/0.4.1/assets/" folder

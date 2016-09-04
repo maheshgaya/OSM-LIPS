@@ -14,4 +14,4 @@ and have a database.
 1. Download/Clone this project.
 2. In Android Studio, do File -> New -> Import Project. Use the directory of the project.
 3. Build the project.
-4. Once you build this project, copy the files in the Walkabout Style Folder to "osmlips/build/intermediates/exploded-aar/com.mapzen.tangram/tangram/0.4.1/assets/" folder
+4. Once you build this project, copy the files in the "styles/walkabout-style-more-labels/" Folder to "osmlips/build/intermediates/exploded-aar/com.mapzen.tangram/tangram/0.4.1/assets/" folder

@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     sourceSets.main.assets.srcDirs = ['../styles']
 }
 
@@ -28,4 +29,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:9.4.0'
     compile 'com.mapzen:mapzen-android-sdk:1.0.9'
     compile 'com.mapzen.tangram:tangram:0.2.1'
+    compile 'com.mapzen.android:lost:1.1.1'
 }

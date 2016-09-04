@@ -24,8 +24,9 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />
+    <!--
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
@@ -44,15 +45,18 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorBlack"
             android:text="Accelerometer: 0;\nMagnetic Field: 0;\nOrientation: 0;\nProximity: 0;\nLongitude: current; \nLatitude: current"/>
+
     </LinearLayout>
+    -->
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fabCurrentLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_my_location_white_18dp" />
+
 
 </android.support.design.widget.CoordinatorLayout>

@@ -28,8 +28,7 @@ public class BaseActivity extends AppCompatActivity
     private final String TAG = this.getClass().getSimpleName();
 
     //Action Bar
-    protected MenuItem styleItem;
-    protected Spinner spinner;
+    protected SearchView mSearchView;
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
@@ -58,13 +57,14 @@ public class BaseActivity extends AppCompatActivity
         }
     }
 
+    //sourceSets.main.assets.srcDirs = ['../styles']
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.d(TAG, "onCreateOptionsMenu: method executed");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Configure the search info and add any event listeners...
 
@@ -80,13 +80,7 @@ public class BaseActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Log.d(TAG, "onOptionsItemSelected: action_settings selected");
-            startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
-        } else if (id == R.id.action_select_wifi){
-            Log.d(TAG, "onOptionsItemSelected: action_select_wifi selected");
-            return true;
-        } else if (id == R.id.action_search){
+         if (id == R.id.action_search){
             Log.d(TAG, "onOptionsItemSelected: action_search selected");
         }
 
@@ -107,10 +101,10 @@ public class BaseActivity extends AppCompatActivity
             Log.d(TAG, "onNavigationItemSelected: mainIntent started");
 
         } else if (id == R.id.nav_location_sensor) {
-            Intent locationIntent = new Intent(getApplicationContext(), GetLocation.class);
+            Intent locationIntent = new Intent(getApplicationContext(), GetLocationActivity.class);
             startActivity(locationIntent);
         } else if (id == R.id.nav_wifi_scanner) {
-            Intent wifiScannerIntent = new Intent(getApplicationContext(), WifiScanner.class);
+            Intent wifiScannerIntent = new Intent(getApplicationContext(), WifiScannerActivity.class);
             startActivity(wifiScannerIntent);
         }
 

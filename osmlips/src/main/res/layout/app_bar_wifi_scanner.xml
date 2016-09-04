@@ -6,7 +6,7 @@
     android:theme="@style/WifiScannerActivityTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WifiScanner"
+    tools:context=".WifiScannerActivity"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout

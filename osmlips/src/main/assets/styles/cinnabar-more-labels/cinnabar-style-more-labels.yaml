@@ -123,12 +123,12 @@ cinnabar-colors:
         - &fence                      '#555555'
 
     areas:
-        - &scene1      '#9dc3de'           # map background, water: white
+        - &scene1      '#9dc3de'           # map background, water
         - &water1      '#9dc3de'           # water
         - &water2      [.75,.75,.75]       # playa
         - &water1_o    '#9dc3de'           # water stroke
         - &water2_o    '#9dc3de'           # water stroke 2
-        - &earth1      '#e3e2e0'           # land color: '#e3e2e0' 
+        - &earth1      '#e3e2e0'           # land color
         - &earth1_r    '#666'              # land color road
         - &earth2      '#d8d3ca'           # urban
         - &earth2_v    false               # urban visibility
@@ -391,14 +391,9 @@ textures:
 
 sources:
     osm:
-        #type: TopoJSON #GeoJSON, MVT, TopoJSON
-        #url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
-        #url: '//vector.dev.mapzen.com/osm/all/{z}/{x}/{y}.topojson'
-        #url:  //localhost:8080/osm/all/{z}/{x}/{y}.json
-        #max_zoom: 16
         type: MVT
         url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.mvt
-        max_zoom: 24
+        max_zoom: 26
         url_params:
             api_key: vector-tiles-Pfuh7pk
 
@@ -900,7 +895,7 @@ layers:
                 order: function() { return feature.sort_key; }
                 color: *water1
         water_boundaries-ocean:
-            filter: { boundary: yes, $zoom: { min: 5 } } #min: 10
+            filter: { boundary: yes, $zoom: { min: 10 } }
             draw:
                 lines:
                     order: function() { return feature.sort_key; }
@@ -1609,7 +1604,7 @@ layers:
 #                            outline:
 #                                order: function() { return feature.sort_key + 3; }
                 routes:
-                    filter: { ref: true, $zoom: { min: 9} } #min: 12
+                    filter: { ref: true, $zoom: { min: 12} }
                     draw:
                         lines:
                             color: *minor_route

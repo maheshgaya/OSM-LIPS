@@ -37,7 +37,7 @@ import java.util.List;
  * OpenLIPS
  * Created by Mahesh Gaya on 8/14/16.
  */
-public class WifiScanner extends BaseActivity
+public class WifiScannerActivity extends BaseActivity
         implements View.OnClickListener,
         NavigationView.OnNavigationItemSelectedListener{
     //Logging members
@@ -133,13 +133,7 @@ public class WifiScanner extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Log.d(TAG, "onOptionsItemSelected: action_settings selected");
-            startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
-        } else if (id == R.id.action_select_wifi){
-            Log.d(TAG, "onOptionsItemSelected: action_select_wifi selected");
-            return true;
-        } else if (id == R.id.action_refresh_wifi){
+        if (id == R.id.action_refresh_wifi){
             Log.d(TAG, "onOptionsItemSelected: action_refresh");
             Snackbar.make(mCoordinatorLayout,"Getting Wifi updates...", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
             mWifiManager.startScan();

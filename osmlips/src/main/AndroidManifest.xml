@@ -23,12 +23,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="edu.drake.research.android.osmlips.GetLocation"
+        <activity android:name=".GetLocationActivity"
             android:label="Location"
             android:theme="@style/GetLocationActivityTheme">
         </activity>
 
-        <activity android:name="edu.drake.research.android.osmlips.WifiScanner"
+        <activity android:name=".WifiScannerActivity"
             android:label="Wifi Scanner"
             android:theme="@style/WifiScannerActivityTheme">
         </activity>

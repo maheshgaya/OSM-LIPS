@@ -47,7 +47,7 @@ import java.util.Date;
 /**
  * Created by Mahesh Gaya on 8/3/16.
  */
-public class GetLocation extends BaseActivity implements
+public class GetLocationActivity extends BaseActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener,
@@ -64,11 +64,12 @@ public class GetLocation extends BaseActivity implements
     //members for location services
     protected GoogleApiClient mGoogleApiClient;
 
+
     //protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
     private AddressResultReceiver mAddressResultReceiver;
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
-    protected static final int UPDATE_INTERVAL_IN_MILLISECONDS = 30000;
+    protected static final int UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
     protected static final int FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected String mLastUpdatedTime;
@@ -180,15 +181,7 @@ public class GetLocation extends BaseActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            //opens setting activity
-            Log.d(TAG, "onOptionsItemSelected: action_settings selected");
-            startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
-        } else if (id == R.id.action_select_wifi){
-            //opens wifi selection activity (context on Wifi Activity)
-            Log.d(TAG, "onOptionsItemSelected: action_select_wifi selected");
-            return true;
-        } else if (id == R.id.action_refresh_location){
+        if (id == R.id.action_refresh_location){
             //gets updates on current location
             Log.d(TAG, "onOptionsItemSelected: action_refresh_location tapped");
             if (checkPermission()){
@@ -302,7 +295,7 @@ public class GetLocation extends BaseActivity implements
     * Fetches location updates as intent in the background
     * */
     protected void startIntentService(){
-        Intent intent = new Intent(GetLocation.this, FetchAddressIntentService.class);
+        Intent intent = new Intent(GetLocationActivity.this, FetchAddressIntentService.class);
         mAddressResultReceiver = new AddressResultReceiver(new Handler());
         intent.putExtra(Constants.RECEIVER, mAddressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
@@ -395,7 +388,7 @@ public class GetLocation extends BaseActivity implements
                 //Location settings required, show dialog box
                 try{
                     status.startResolutionForResult(
-                            GetLocation.this, REQUEST_CHECK_SETTINGS);
+                            GetLocationActivity.this, REQUEST_CHECK_SETTINGS);
                 } catch (IntentSender.SendIntentException e){
                     Log.d(TAG, "onResult: do nothing");
                 }
@@ -451,6 +444,7 @@ public class GetLocation extends BaseActivity implements
     @Override
     public void onConnectionSuspended(int i) {
         Log.d(TAG, "onConnectionSuspended: method executed");
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -467,6 +461,10 @@ public class GetLocation extends BaseActivity implements
 
     }
 
+    /*
+    * Permission method
+    * This one check if permission is given by the user for this app
+    * */
     private boolean checkPermission(){
         Log.d(TAG, "checkPermission: method executed");
         int result_access_coarse_location = ContextCompat
@@ -485,6 +483,10 @@ public class GetLocation extends BaseActivity implements
         }
     }
 
+    /*
+    * Permission method
+    * This one request permission if user has not already given the permission.
+    * */
     private void requestPermission(){
         Log.d(TAG, "requestPermission: method executed");
 
@@ -500,6 +502,10 @@ public class GetLocation extends BaseActivity implements
 
     }
 
+    /*
+    * Permission method
+    * check if permission is granted
+    * */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String Permissions[], int[] grantResults){

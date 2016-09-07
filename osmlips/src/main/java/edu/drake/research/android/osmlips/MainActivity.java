@@ -84,13 +84,13 @@ public class MainActivity extends BaseActivity implements MapView.OnMapReadyCall
     public void onMapReady(MapController mapController) {
         // We receive a MapController object in this callback when the map is ready for use.
         mMapController = mapController;
-        mMapController.setZoom(18);
-        mMapController.setPosition(new LngLat(-93.6499286, 41.5985281));
+        mMapController.setZoom(14);
+        mMapController.setPosition(new LngLat(-93.6602525, 41.6012903));
 
         // These calls create new data sources in the scene with the names given.
         // The scene already has layers defined to provide styling for features from these sources.
         mLocationDot =mMapController.addDataLayer("mz_default_point");
-        LngLat currentLocation = new LngLat(-93.6499286, 41.5985281);
+        LngLat currentLocation = new LngLat(-93.6602525, 41.6012903);
 
         java.util.Map<java.lang.String,java.lang.String> properties = new HashMap<String,String>();
         properties.put("types", "currentlocation");

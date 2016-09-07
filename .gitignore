@@ -6,3 +6,11 @@
 .DS_Store
 /build
 /captures
+
+styles/walkabout-style-more-labels/
+
+styles/refill-style/
+
+osmlips/src/main/assets/styles/walkabout-style-more-labels/
+
+osmlips/src/main/assets/styles/refill-style/

@@ -13,8 +13,7 @@ and have a database.
 ##Using source code with Android Studio
 1. Download/Clone this project.
 2. In Android Studio, do File -> New -> Import Project. Use the directory of the project.
-3. Build the project.
-4. Once you build this project, copy the files in the "styles/walkabout-style-more-labels/" Folder to "osmlips/build/intermediates/exploded-aar/com.mapzen.tangram/tangram/0.4.1/assets/" folder
+3. Run the project on an emulator or on your Android phone. (API >= 19)
 
 ##Open Source Tools and Libraries for this project
 1. Open Street Map (OSM) Data - https://www.openstreetmap.org/

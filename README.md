@@ -17,7 +17,7 @@ and have a database.
 4. Once you build this project, copy the files in the "styles/walkabout-style-more-labels/" Folder to "osmlips/build/intermediates/exploded-aar/com.mapzen.tangram/tangram/0.4.1/assets/" folder
 
 ##Open Source Tools and Libraries for this project
-1. Open Street Maps (OSM) Data - https://www.openstreetmap.org/
+1. Open Street Map (OSM) Data - https://www.openstreetmap.org/
 2. Mapzen TileServer - https://mapzen.com/
 3. Tangram Map Renderer - https://mapzen.com/products/tangram/
 4. Others...

@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,6 +87,8 @@ public class GetLocationActivity extends BaseActivity implements
     private String mLastUpdatedTimeLabel;
     private String mAddressLabel;
 
+    private ProgressBar mProgressBar;
+
     //permission members
     protected static final int PERMISSION_REQUEST_CODE = 1;
     protected static final String[] PERMISSION_ARRAY = new String[]{
@@ -138,7 +141,8 @@ public class GetLocationActivity extends BaseActivity implements
         mLastUpdatedTimeText = (TextView)findViewById(R.id.txt_last_updated_time);
         mAddressText = (TextView)findViewById(R.id.txt_geoaddress);
         mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinatorLayoutLocation);
-
+        mProgressBar = (ProgressBar)findViewById(R.id.progressbar_loading_location_activity);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         //set Labels
         mLongitudeLabel = getResources().getString(R.string.longitude_label);
@@ -154,6 +158,7 @@ public class GetLocationActivity extends BaseActivity implements
         mContext = getApplicationContext();
         mActivity = this;
         Log.d(TAG, "onCreate: GoogleApiClient Instance");
+
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
@@ -188,7 +193,8 @@ public class GetLocationActivity extends BaseActivity implements
                 Log.d(TAG, "onClick: case R.id.btn_get_location: checkPermission() is True");
                 mRequestingLocationUpdates = true;
                 startLocationUpdates();
-                Snackbar.make(mCoordinatorLayout,"Permission already granted. Getting Location updates...", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+                //Snackbar.make(mCoordinatorLayout,"Permission already granted. Getting Location updates...", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+                mProgressBar.setVisibility(View.VISIBLE);
                 if (mGoogleApiClient.isConnected() && mCurrentLocation != null){
                     startIntentService();
                 }
@@ -525,6 +531,7 @@ public class GetLocationActivity extends BaseActivity implements
     @SuppressLint("DefaultLocale")
     public void displayLocationUI(){
         Log.d(TAG, "displayLocationUI: method executed");
+        mProgressBar.setVisibility(View.GONE);
         if (mCurrentLocation != null) {
             mLongitudeText.setText(String.format("%s: %f ", mLongitudeLabel, mCurrentLocation.getLongitude()));
             mLatitudeText.setText((String.format("%s: %f ", mLatitudeLabel, mCurrentLocation.getLatitude())));

@@ -27,8 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -68,6 +70,7 @@ public class WifiScannerActivity extends BaseActivity
     private Context mContext;
     private Activity mActivity;
     private CoordinatorLayout mCoordinatorLayout;
+    private ProgressBar mProgressBar;
 
     protected String mLastUpdatedTime;
 
@@ -95,9 +98,11 @@ public class WifiScannerActivity extends BaseActivity
         mWifiListView = (ListView)findViewById(R.id.listview_wifi_scan_results);
         mLastUpdatedText = (TextView)findViewById(R.id.txt_last_updated_time_wifi);
 
+        //layout
         Log.d(TAG, "onCreate: Get mCoordinatorLayout");
         mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.coordinatorLayoutWifi);
-        
+        mProgressBar = (ProgressBar)findViewById(R.id.progressbar_loading_wifi_activity);
+
 
         mWifiInfoLabel = getResources().getString(R.string.wifi_info_label);
         mWifiStateLabel = getResources().getString(R.string.wifi_state_label);
@@ -110,6 +115,7 @@ public class WifiScannerActivity extends BaseActivity
         mWifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
         mWifiReceiver = new WifiScanReceiver();
         mWifiManager.startScan();
+        mProgressBar.setVisibility(View.VISIBLE);
 
 
     }
@@ -135,7 +141,10 @@ public class WifiScannerActivity extends BaseActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh_wifi){
             Log.d(TAG, "onOptionsItemSelected: action_refresh");
-            Snackbar.make(mCoordinatorLayout,"Getting Wifi updates...", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+            //Snackbar.make(mCoordinatorLayout,"Getting Wifi updates...", Snackbar.LENGTH_LONG).setActionTextColor(Color.WHITE).show();
+            String[] emptyStr = {};
+            mWifiListView.setAdapter(new ArrayAdapter<String>(mContext, R.layout.custom_text_view, emptyStr));
+            mProgressBar.setVisibility(View.VISIBLE);
             mWifiManager.startScan();
         }
 
@@ -245,6 +254,8 @@ public class WifiScannerActivity extends BaseActivity
             mWifiInfo = mWifiManager.getConnectionInfo();
             mWifiScanList = mWifiManager.getScanResults();
             mWifiList = new String[mWifiScanList.size()];
+
+            mProgressBar.setVisibility(View.GONE);
 
             int j;
             for (int i = 0; i < mWifiScanList.size(); i++){

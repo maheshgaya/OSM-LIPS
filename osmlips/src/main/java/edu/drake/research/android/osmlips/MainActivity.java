@@ -1,10 +1,12 @@
 package edu.drake.research.android.osmlips;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.RecyclerView;
@@ -13,28 +15,33 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.mapzen.android.graphics.MapFragment;
 import com.mapzen.android.graphics.MapzenMap;
+import com.mapzen.android.graphics.OnMapReadyCallback;
+import com.mapzen.android.graphics.model.BubbleWrapStyle;
+import com.mapzen.android.graphics.model.CinnabarStyle;
+import com.mapzen.android.graphics.model.Marker;
 import com.mapzen.pelias.gson.Properties;
 import com.mapzen.tangram.LngLat;
 import com.mapzen.tangram.MapController;
 import com.mapzen.tangram.MapData;
 import com.mapzen.tangram.MapView;
+import com.squareup.okhttp.internal.Platform;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends BaseActivity implements MapView.OnMapReadyCallback {
+public class MainActivity extends BaseActivity{ //implements MapView.OnMapReadyCallback {
 
 
     //logging members
     private final String TAG = this.getClass().getSimpleName();
 
     //Map members
-    private MapView mMapView;
-    private MapController mMapController;
-    private MapData mLocationDot;
+    private com.mapzen.android.graphics.MapView mMapView;
+    private MapzenMap mMapzenMap;
 
 
     @Override
@@ -53,8 +60,7 @@ public class MainActivity extends BaseActivity implements MapView.OnMapReadyCall
         fabCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with zooming on the dot with current location", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                mMapzenMap.addMarker(new Marker(-93.6518900,41.6013800));
             }
         });
 
@@ -69,63 +75,41 @@ public class MainActivity extends BaseActivity implements MapView.OnMapReadyCall
         navigationView.setNavigationItemSelectedListener(this);
 
         // MapView in layout file
-        mMapView = (MapView)findViewById(R.id.map);
+        mMapView = (com.mapzen.android.graphics.MapView) findViewById(R.id.map);
 
-        // Lifecycle events from the Activity must be forwarded to the MapView.
-        mMapView.onCreate(savedInstanceState);
-
-        // This starts a background process to set up the map.
-        mMapView.getMapAsync(this, "walkabout-style-more-labels.yaml");
-
-
+        //mMapView.getMapAsync(this, "walkabout-style-more-labels.yaml");
+        mMapView.getMapAsync(new CinnabarStyle(), new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(MapzenMap mapzenMap) {
+                //Map is ready
+                MainActivity.this.mMapzenMap = mapzenMap;
+                if (Build.VERSION.SDK_INT >= 21) {
+                    mMapzenMap.setMyLocationEnabled(true); //works only with API 21 and above
+                }
+            }
+        });
     }
 
-    @Override
-    public void onMapReady(MapController mapController) {
-        // We receive a MapController object in this callback when the map is ready for use.
-        mMapController = mapController;
-        mMapController.setZoom(14);
-        mMapController.setPosition(new LngLat(-93.6602525, 41.6012903));
 
-        // These calls create new data sources in the scene with the names given.
-        // The scene already has layers defined to provide styling for features from these sources.
-        mLocationDot =mMapController.addDataLayer("mz_default_point");
-        LngLat currentLocation = new LngLat(-93.6602525, 41.6012903);
-
-        java.util.Map<java.lang.String,java.lang.String> properties = new HashMap<String,String>();
-        properties.put("types", "currentlocation");
-        Log.d(TAG, "onMapReady: adding a point");
-        mLocationDot.addPoint(currentLocation, null);
-        Log.d(TAG, "onMapReady: render point");
-        mMapController.requestRender();
-
-
-    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mMapView.onPause();
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mMapView.onResume();
-
     }
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
     }
 }

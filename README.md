@@ -12,14 +12,17 @@ and have a database.
 
 ##Using source code with Android Studio
 1. Download/Clone this project.
-2. In Android Studio, do File -> New -> Import Project. Use the directory of the project.
+
+  ```
+  $ git clone https://github.com/maheshgaya/OSM-LIPS.git
+  ```
+2. Import the project directory in Android Studio, do File -> New -> Import Project.
 3. Run the project on an emulator or on your Android phone. (API >= 19)
 
 ##Open Source Tools and Libraries for this project
 1. Open Street Map (OSM) Data - https://www.openstreetmap.org/
 2. Mapzen TileServer - https://mapzen.com/
 3. Tangram Map Renderer - https://mapzen.com/products/tangram/
-4. Others...
 
 ##Contributing to this project
 TODO

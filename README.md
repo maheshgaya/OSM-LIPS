@@ -11,7 +11,7 @@ adding the machine learning algorithms for the Indoor Locationalization system, 
 and have a database.
 
 ##Using source code with Android Studio
-1. Download/Clone this project.
+1. Clone this project.
 
   ```
   $ git clone https://github.com/maheshgaya/OSM-LIPS.git
@@ -25,7 +25,10 @@ and have a database.
 3. Tangram Map Renderer - https://mapzen.com/products/tangram/
 
 ##Contributing to this project
-TODO
+1. Fork this repository.
+2. Write your fix or feature in your own repository.
+3. Once it is ready and tested, pull a request to merge your code. 
+**Please make sure that you [rebase](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request) your repository before pulling a request.**
 
 ##License
 OSM-LIPS: Indoor Localization with maps Copyright (C) 2016 Drake University

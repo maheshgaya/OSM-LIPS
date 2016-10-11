@@ -77,15 +77,18 @@ public class MainActivity extends BaseActivity{ //implements MapView.OnMapReadyC
         // MapView in layout file
         mMapView = (com.mapzen.android.graphics.MapView) findViewById(R.id.map);
 
-        //mMapView.getMapAsync(this, "walkabout-style-more-labels.yaml");
+
         mMapView.getMapAsync(new CinnabarStyle(), new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapzenMap mapzenMap) {
                 //Map is ready
                 MainActivity.this.mMapzenMap = mapzenMap;
                 if (Build.VERSION.SDK_INT >= 21) {
-                    mMapzenMap.setMyLocationEnabled(true); //works only with API 21 and above
+                    //mMapzenMap.setMyLocationEnabled(true); //works only with API 21 and above
                 }
+                mMapzenMap.setPosition(new LngLat(-93.6518900, 41.6013800));
+                mMapzenMap.setZoom(16f);
+
             }
         });
     }

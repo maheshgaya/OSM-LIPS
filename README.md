@@ -1,37 +1,27 @@
-# OSM-LIPS
-LIPS (Learning-based Indoor Positioning System) with OSM (Open Street Map)
+# LIPS WITH MAPS
+LIPS (Learning-based Indoor Positioning System) with Maps
 
 This is a research project for indoor GPS. It is an extension of [LIPS](https://github.com/davidmascharka/LIPS), 
-originally created by [David Mascharka](https://github.com/davidmascharka), 
-where we are including OpenStreetMap data into the project. 
+originally developed by [David Mascharka](https://github.com/davidmascharka), where we are including maps instead of a blank slate for showing the location of the user.
 
-Currently, we are working on getting setup for using the OSM map. We are using Mapzen tile server, and other 
-libraries to respond to user interaction.  In the future, we will start 
-adding the machine learning algorithms for the Indoor Locationalization system, and we will also collect new data,
-and have a database.
-
-##Using source code with Android Studio
+## Using source code with Android Studio
 1. Clone this project.
 
   ```
-  $ git clone https://github.com/maheshgaya/OSM-LIPS.git
+  $ git clone https://github.com/maheshgaya/lips-with-maps.git
   ```
 2. Import the project directory in Android Studio, do File -> New -> Import Project.
-3. Run the project on an emulator or on your Android phone. (API >= 19)
+3. Run the project on an emulator or on your Android phone. (API >= 16)
 
-##Open Source Tools and Libraries for this project
-1. Open Street Map (OSM) Data - https://www.openstreetmap.org/
-2. Mapzen TileServer - https://mapzen.com/
-3. Tangram Map Renderer - https://mapzen.com/products/tangram/
 
-##Contributing to this project
+## Contributing to this project
 1. Fork this repository.
 2. Write your fix or feature in your own repository.
 3. Once it is ready and tested, pull a request to merge your code. 
 **Please make sure that you [rebase](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request) your repository before pulling a request.**
 
 ##License
-OSM-LIPS: Indoor Localization with maps Copyright (C) 2016 Drake University
+Indoor Localization with Maps Copyright (C) 2016 Drake University
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

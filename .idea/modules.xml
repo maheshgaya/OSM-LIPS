@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/OSM-LIPS.iml" filepath="$PROJECT_DIR$/OSM-LIPS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lips-with-maps.iml" filepath="$PROJECT_DIR$/lips-with-maps.iml" />
       <module fileurl="file://$PROJECT_DIR$/osmlips/osmlips.iml" filepath="$PROJECT_DIR$/osmlips/osmlips.iml" />
     </modules>
   </component>

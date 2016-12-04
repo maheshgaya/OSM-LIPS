@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.drake.research.android.lipswithmaps">
 
+    <!-- permissions -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -15,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Google Maps API Version -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -24,7 +26,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name="edu.drake.research.android.lipswithmaps.activity.MainActivity">
+        <!-- main activity contains maps -->
+        <activity android:name="edu.drake.research.android.lipswithmaps.activity.MapsActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

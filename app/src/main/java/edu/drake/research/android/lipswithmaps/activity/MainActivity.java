@@ -1,4 +1,4 @@
-package edu.drake.research.android.openlips.activity;
+package edu.drake.research.android.lipswithmaps.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,12 +7,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import edu.drake.research.android.osmlips.R;
+import edu.drake.research.android.lipswithmaps.R;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
     private GoogleMap mMap;

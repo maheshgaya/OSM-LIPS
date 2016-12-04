@@ -1,4 +1,4 @@
-package edu.drake.research.android.osmlips;
+package edu.drake.research.android.lipswithmaps;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package edu.drake.research.android.osmlips;
+package edu.drake.research.android.lipswithmaps;
 
 import org.junit.Test;
 

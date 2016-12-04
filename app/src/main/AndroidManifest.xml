@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.drake.research.android.osmlips">
+    package="edu.drake.research.android.lipswithmaps">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -24,7 +24,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name="edu.drake.research.android.openlips.activity.MainActivity">
+        <activity android:name="edu.drake.research.android.lipswithmaps.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

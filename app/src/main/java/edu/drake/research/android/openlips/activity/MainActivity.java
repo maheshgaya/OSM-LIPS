@@ -1,4 +1,4 @@
-package edu.drake.research.android.openlips;
+package edu.drake.research.android.openlips.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

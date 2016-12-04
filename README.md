@@ -11,7 +11,16 @@ originally developed by [David Mascharka](https://github.com/davidmascharka), wh
   $ git clone https://github.com/maheshgaya/lips-with-maps.git
   ```
 2. Import the project directory in Android Studio, do File -> New -> Import Project.
-3. Run the project on an emulator or on your Android phone. (API >= 16)
+3. Create an xml file under res/values/ for adding the Google Maps API key. Add the code below and replace `GOOGLE MAPS KEY` with your own key from the [Google Developer Console](https://console.developers.google.com/). The key requires Google Maps API for Android and Google Places API for Android
+
+  ```
+  <?xml version="1.0" encoding="utf-8"?>
+  <resources>
+      <!-- enter your key -->
+      <string name="google_maps_key">GOOGLE MAPS KEY</string>
+  </resources>
+  ```
+4. Run the project on an emulator or on your Android phone. (API >= 16)
 
 
 ## Contributing to this project
@@ -21,7 +30,7 @@ originally developed by [David Mascharka](https://github.com/davidmascharka), wh
 **Please make sure that you [rebase](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request) your repository before pulling a request.**
 
 ##License
-Indoor Localization with Maps Copyright (C) 2016 Drake University
+Indoor Localization with Maps. Copyright (C) 2016 Drake University
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

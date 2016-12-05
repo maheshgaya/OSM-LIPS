@@ -11,7 +11,7 @@ originally developed by [David Mascharka](https://github.com/davidmascharka), wh
   $ git clone https://github.com/maheshgaya/lips-with-maps.git
   ```
 2. Import the project directory in Android Studio, do File -> New -> Import Project.
-3. Create an xml file under res/values/ for adding the Google Maps API key. Add the code below and replace `GOOGLE MAPS KEY` with your own key from the [Google Developer Console](https://console.developers.google.com/). The key requires Google Maps API for Android and Google Places API for Android
+3. Create an xml file `app/src/main/res/values/google_maps_api_key.xml` for adding the Google Maps API key. Add the code below and replace `GOOGLE MAPS KEY` with your own key from the [Google Developer Console](https://console.developers.google.com/). The key requires Google Maps API for Android and Google Places API for Android
 
   ```
   <?xml version="1.0" encoding="utf-8"?>

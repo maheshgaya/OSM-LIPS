@@ -23,10 +23,10 @@
     <FrameLayout
         android:layout_gravity="top"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize"
+        android:layout_marginBottom="@dimen/bottom_sheet_height">
         <include layout="@layout/fragment_maps"
-            android:elevation="4dp"
-            android:layout_marginTop="?actionBarSize"
             android:layout_height="match_parent"
             android:layout_width="match_parent"/>
     </FrameLayout>
@@ -36,19 +36,19 @@
         android:elevation="4dp"
         android:background="@android:color/white"
         android:id="@+id/framelayout_wifilist"
-        android:minHeight="100dp"
+        android:minHeight="@dimen/bottom_sheet_min_height"
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="@dimen/bottom_sheet_height"
                 android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:paddingStart="16dp"
-                android:paddingRight="16dp"
-                android:paddingEnd="16dp">
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingEnd="@dimen/activity_horizontal_margin">
 
                 <TextView
                     android:id="@+id/textview_current_location"
@@ -78,6 +78,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -86,9 +87,7 @@
                     android:id="@+id/recycleview_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
-
             </LinearLayout>
-
     </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

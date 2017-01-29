@@ -38,6 +38,7 @@ public class WifiAdapter extends RecyclerView.Adapter<WifiAdapter.ViewHolder> {
         WifiItem wifiItem = mWifiItemList.get(position);
         holder. levelTextView.setText(String.valueOf(wifiItem.getLevel()));
         holder.ssidTextView.setText(wifiItem.getSsid());
+        holder.bssidTextView.setText(wifiItem.getBssid());
 
     }
 
@@ -50,6 +51,7 @@ public class WifiAdapter extends RecyclerView.Adapter<WifiAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.textview_wifi_level)TextView levelTextView;
         @BindView(R.id.textview_wifi_ssid)TextView ssidTextView;
+        @BindView(R.id.textview_wifi_bssid)TextView bssidTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);

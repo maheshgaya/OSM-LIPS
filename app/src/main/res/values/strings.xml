@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">Lips With Maps</string>
+
+    <!-- Wifi information -->
     <string name="wifi_level">Level</string>
     <string name="wifi_ssid">SSID</string>
+    <string name="wifi_bssid">BSSID</string>
+
+    <!-- strings for permissions -->
+    <string name="permission_location_rationale">Location permission required for this app to work!</string>
+    <string name="permission_available">Requesting current location</string>
+    <string name="permission_not_available">Permission denied. No location data available</string>
 </resources>

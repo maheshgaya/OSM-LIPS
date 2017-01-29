@@ -11,6 +11,9 @@ import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,10 +25,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -54,6 +55,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @BindView(R.id.recycleview_wifi) RecyclerView mWifiRecycleView;
     @BindView(R.id.framelayout_wifilist)View mWifiListFrameLayout;
     @BindView(R.id.textview_current_location)TextView mCurrentLocationTextView;
+    @BindView(R.id.main_coordinator_layout)CoordinatorLayout mCoordinatorLayout;
 
     //Views
     private BottomSheetBehavior mBottomSheetBehavior; //TODO: use this for the WifiList
@@ -64,7 +66,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Map variables
     private GoogleMap mMap;
-    private static int MY_LOCATION_REQUEST_CODE = 100;
+
+    //Permissions
+    private static int LOCATION_REQUEST_CODE = 100;
+    String locationPermission = Manifest.permission.ACCESS_FINE_LOCATION;
 
     //Wifi variables
     private List<ScanResult> mWifiScanResults;
@@ -72,10 +77,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     final BroadcastReceiver mWifiScanReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mWifiList.clear();
             mWifiScanResults = mWifiManager.getScanResults();
 
             for (ScanResult result: mWifiScanResults){
-                mWifiList.add(new WifiItem(result.SSID, result.level));
+                mWifiList.add(new WifiItem(result.SSID, result.BSSID, result.level));
             }
 
             mWifiAdapter.notifyDataSetChanged();
@@ -157,37 +163,96 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Initialize the wifi Broadcaster
         wifiScan();
+        askPermission();
     }
 
     private void enableCurrentLocationUI(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
                 == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
+            if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
+            }
+
         } else {
-            //todo Show rationale and request permission.
+            askPermission();
         }
     }
 
-    private void getCurrentLongLat(){
+
+    private void getCurrentLongLat() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        //TODO: Check permssion
+        //Check permission
         // Register the listener with the Location Manager to receive location updates
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        } else {
+            askPermission();
+        }
 
+    }
+
+    private void askPermission(){
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
+                == PackageManager.PERMISSION_GRANTED) {
+            initializeSensors();
+        } else {
+            showRationale();
+        }
+    }
+    private void initializeSensors(){
+        enableCurrentLocationUI();
+        getCurrentLongLat();
+        wifiScan();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == MY_LOCATION_REQUEST_CODE) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
             if (permissions.length == 1 &&
-                    permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION &&
+                    permissions[0].equals(locationPermission) &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
+                initializeSensors();
             } else {
-                //todo Permission was denied. Display an error message.
+                //Permission was denied. Display an error message.
+                showRationale();
+
             }
         }
+    }
+
+    private boolean showRationale(){
+        // Should we show an explanation?
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                locationPermission)) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            Snackbar.make(mCoordinatorLayout, R.string.permission_location_rationale,
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(android.R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ActivityCompat.requestPermissions(MapsActivity.this,
+                                    new String[]{locationPermission},
+                                    LOCATION_REQUEST_CODE);
+                        }
+                    })
+                    .show();
+
+        } else {
+
+            // No explanation needed, we can request the permission.
+            try {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{locationPermission},
+                        LOCATION_REQUEST_CODE);
+            } catch (Exception e){
+                Log.e(TAG, "showRationale: ", e);
+            }
+        }
+        return false;
     }
 
     private void wifiScan(){
@@ -195,18 +260,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         registerReceiver(mWifiScanReceiver,
                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         mWifiManager.startScan();
-        
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Add a marker in Sydney, Australia, and move the camera.
         mMap.addMarker(new MarkerOptions().position(DRAKE_UNIVERSITY).title("Drake University! Yay!"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(drakeUniversity));
         setCameraPosition(DRAKE_UNIVERSITY);
-        enableCurrentLocationUI();
-        getCurrentLongLat();
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
+                == PackageManager.PERMISSION_GRANTED){
+            mMap.setMyLocationEnabled(true);
+        }
     }
 
     /**
@@ -220,7 +285,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .zoom(15)                   // Sets the zoom
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
     }
 
     /**
@@ -233,7 +297,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .zoom(15)              // Sets the zoom
                 .build();              // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
     }
 }

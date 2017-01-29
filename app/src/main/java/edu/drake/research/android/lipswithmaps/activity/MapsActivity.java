@@ -40,6 +40,7 @@ import butterknife.ButterKnife;
 import edu.drake.research.android.lipswithmaps.R;
 import edu.drake.research.android.lipswithmaps.adapter.WifiAdapter;
 import edu.drake.research.android.lipswithmaps.data.WifiItem;
+import edu.drake.research.android.lipswithmaps.helper.Utils;
 
 import static junit.framework.Assert.assertNotNull;
 
@@ -83,16 +84,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     };
 
+    //Location variables
+    LocationManager mLocationManager;
+    Location mLocation;
+    android.location.LocationListener mLocationListener = new android.location.LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            //TODO: Save this data
+            mLocation = location;
+            mCurrentLocationTextView.setText("Time: " + Utils.getFriendlyDateTime(location.getTime()) +
+                    "\nLongitude: " + location.getLongitude() +
+                    "\t\tLatitude: " + location.getLatitude() +
+                    "\nAccuracy: " + location.getAccuracy() +
+                    "\t\tAltitude: " + location.getAltitude());
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
     @Override
     protected void onStop() {
-        super.onStop();
         try {
             unregisterReceiver(mWifiScanReceiver);
         } catch (java.lang.IllegalArgumentException e){
             Log.e(TAG, "onStop: ", e);
             e.printStackTrace();
         }
+        if (mLocationManager != null){
+            mLocationManager.removeUpdates(mLocationListener);
+        }
 
+        super.onStop();
     }
 
     private void setupToolbar(){
@@ -134,32 +169,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void getCurrentLongLat(){
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        android.location.LocationListener locationListener = new android.location.LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                mCurrentLocationTextView.setText("Longitude: " + location.getLongitude() + "\t\tLatitude: " + location.getLatitude());
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         //TODO: Check permssion
         // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
 
     }
 

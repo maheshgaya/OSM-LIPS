@@ -122,6 +122,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     };
 
     @Override
+    @SuppressWarnings({"MissingPermission"})
     protected void onStop() {
         try {
             unregisterReceiver(mWifiScanReceiver);
@@ -173,8 +174,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.setMyLocationEnabled(true);
             }
 
-        } else {
-            askPermission();
         }
     }
 
@@ -202,7 +201,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
     private void initializeSensors(){
-        enableCurrentLocationUI();
         getCurrentLongLat();
         wifiScan();
     }
@@ -268,10 +266,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(DRAKE_UNIVERSITY).title("Drake University! Yay!"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(drakeUniversity));
         setCameraPosition(DRAKE_UNIVERSITY);
-        if (ContextCompat.checkSelfPermission(this, locationPermission)
-                == PackageManager.PERMISSION_GRANTED){
-            mMap.setMyLocationEnabled(true);
-        }
+        enableCurrentLocationUI();
     }
 
     /**

@@ -22,7 +22,8 @@ public class LocationDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        final String SQL_CREATE_WIFI_TABLE =
+                "CREATE TABLE " + LocationContract.WifiEntry.TABLE_NAME ; //TODO
     }
 
     @Override

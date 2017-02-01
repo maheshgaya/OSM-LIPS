@@ -23,6 +23,7 @@ public class LocationContract {
     public static final String PATH_PHONE = "phone";
     public static final String PATH_READING = "reading";
     public static final String PATH_PHONE_READING = "phone_reading";
+    public static final String PATH_WIFI_READING = "wifi_reading";
 
     /**
      * Wifi Table
@@ -170,10 +171,6 @@ public class LocationContract {
         public static final String COLUMN_ORIENTATION_Y = "orientation_y"; //double
         public static final String COLUMN_ORIENTATION_Z = "orientation_z"; //double
 
-        /** Wifi level data */
-        public static final String COLUMN_WIFI_ID = "wifi_id"; //foreign key
-        public static final String COLUMN_WIFI_READING = "wifi_reading"; //integer
-
         /**
          * Content provider
          */
@@ -187,6 +184,35 @@ public class LocationContract {
 
         //building the paths
         public static Uri buildReadingUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    /**
+     * This table links wifi and reading together
+     */
+    public static final class WifiReadingEntry implements BaseColumns{
+        //Table Name
+        public static final String TABLE_NAME = "wifi_reading";
+        //Columns
+        public static final String COLUMN_READING_ID = "reading_id"; //foreign key
+        public static final String COLUMN_WIFI_ID = "wifi_id"; //foreign key
+        public static final String COLUMN_WIFI_READING = "wifi_reading"; //integer
+
+
+        /**
+         * Content provider
+         */
+        //defining the default paths
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_WIFI_READING).build();
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WIFI_READING;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_WIFI_READING;
+
+        //building the paths
+        public static Uri buildWifiReadingUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
     }

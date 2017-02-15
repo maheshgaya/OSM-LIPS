@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
@@ -75,6 +76,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Views
     private BottomSheetBehavior mBottomSheetBehavior; //TODO: use this for the WifiList
+
+    //Sensors
+    SensorManager mSensorManager;
 
     //Wifi list
     private List<WifiItem> mWifiList;
@@ -139,7 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     @SuppressWarnings({"MissingPermission"})
-    protected void onStop() {
+    protected void onPause() {
         try {
             unregisterReceiver(mWifiScanReceiver);
         } catch (java.lang.IllegalArgumentException e){
@@ -150,9 +154,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             //do not put permission here it will end up in an infinite loop
             mLocationManager.removeUpdates(mLocationListener);
         }
-
-        super.onStop();
+        super.onPause();
     }
+
 
     private void setupToolbar(){
         //shows Action bar

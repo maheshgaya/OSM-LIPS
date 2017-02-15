@@ -160,7 +160,7 @@ public class LocationContract {
         public static final String TABLE_NAME = "reading";
         //Columns
         /** Keeps track of time */
-        public static final String COLUMN_TIME_STAMP = "timestamp"; //long
+        public static final String COLUMN_TIME_STAMP = "timestamp"; //string
 
         /** keeps track of location */
         public static final String COLUMN_LONGITUDE = "longitude"; //double

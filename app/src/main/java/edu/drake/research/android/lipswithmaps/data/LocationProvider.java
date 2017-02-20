@@ -17,9 +17,11 @@
 package edu.drake.research.android.lipswithmaps.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
@@ -90,8 +92,126 @@ public class LocationProvider extends ContentProvider{
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        //todo
-        return null;
+        Cursor retCursor;
+        switch (sUriMatcher.match(uri)){
+            case READING:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.ReadingEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case READING_WITH_ID:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.ReadingEntry.TABLE_NAME,
+                        projection,
+                        LocationContract.ReadingEntry._ID + " = ? ",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case WIFI:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.WifiEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case WIFI_WITH_ID:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.WifiEntry.TABLE_NAME,
+                        projection,
+                        LocationContract.WifiEntry._ID + " = ? ",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PHONE:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.PhoneEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PHONE_WITH_ID:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.PhoneEntry.TABLE_NAME,
+                        projection,
+                        LocationContract.PhoneEntry._ID + " = ? ",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PHONE_READING:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.PhoneReadingEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PHONE_READING_WITH_ID:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.PhoneReadingEntry.TABLE_NAME,
+                        projection,
+                        LocationContract.PhoneReadingEntry._ID + " = ? ",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case WIFI_READING:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.WifiReadingEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case WIFI_READING_WITH_ID:
+                retCursor = mLocationDbHelper.getReadableDatabase().query(
+                        LocationContract.WifiReadingEntry.TABLE_NAME,
+                        projection,
+                        LocationContract.WifiReadingEntry._ID + " = ? ",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            default:{
+                // Bad URI
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
+
     }
 
     /**
@@ -139,20 +259,158 @@ public class LocationProvider extends ContentProvider{
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        //todo
-        return null;
+    public Uri insert(Uri uri, ContentValues contentValues) {
+        final SQLiteDatabase db = mLocationDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+        switch (match){
+            case READING: {
+                long _id = db.insert(LocationContract.ReadingEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = LocationContract.ReadingEntry.buildReadingUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case WIFI: {
+                long _id = db.insert(LocationContract.WifiEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = LocationContract.WifiEntry.buildWifiUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case PHONE: {
+                long _id = db.insert(LocationContract.PhoneEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = LocationContract.PhoneEntry.buildPhoneUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case PHONE_READING: {
+                long _id = db.insert(LocationContract.PhoneReadingEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = LocationContract.PhoneReadingEntry.buildPhoneReadingUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            case WIFI_READING: {
+                long _id = db.insert(LocationContract.WifiReadingEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = LocationContract.WifiReadingEntry.buildWifiReadingUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        //todo
-        return 0;
+        final SQLiteDatabase db = mLocationDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+
+        switch (match){
+            case READING: {
+                rowsDeleted = db.delete(
+                        LocationContract.ReadingEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            }
+            case WIFI: {
+                rowsDeleted = db.delete(
+                        LocationContract.WifiEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            }
+            case PHONE: {
+                rowsDeleted = db.delete(
+                        LocationContract.PhoneEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            }
+            case PHONE_READING: {
+                rowsDeleted = db.delete(
+                        LocationContract.PhoneReadingEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            }
+            case WIFI_READING: {
+                rowsDeleted = db.delete(
+                        LocationContract.WifiReadingEntry.TABLE_NAME, selection, selectionArgs
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        // Because a null deletes all rows
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        //todo
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db = mLocationDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsUpdated;
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+
+        switch (match){
+            case READING: {
+                rowsUpdated = db.update(
+                        LocationContract.ReadingEntry.TABLE_NAME, contentValues, selection, selectionArgs
+                );
+                break;
+            }
+            case WIFI: {
+                rowsUpdated = db.update(
+                        LocationContract.WifiEntry.TABLE_NAME, contentValues, selection, selectionArgs
+                );
+                break;
+            }
+            case PHONE: {
+                rowsUpdated = db.update(
+                        LocationContract.PhoneEntry.TABLE_NAME, contentValues, selection, selectionArgs
+                );
+                break;
+            }
+            case PHONE_READING: {
+                rowsUpdated = db.update(
+                        LocationContract.PhoneReadingEntry.TABLE_NAME, contentValues, selection, selectionArgs
+                );
+                break;
+            }
+            case WIFI_READING: {
+                rowsUpdated = db.update(
+                        LocationContract.WifiReadingEntry.TABLE_NAME, contentValues, selection, selectionArgs
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        // Because a null deletes all rows
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 }

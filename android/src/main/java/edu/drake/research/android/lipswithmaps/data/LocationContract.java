@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Drake University
+ * Copyright 2017 Mahesh Gaya
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Drake University
+ * Copyright 2017 Mahesh Gaya
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,11 +22,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -62,7 +66,7 @@ import edu.drake.research.android.lipswithmaps.helper.Utils;
 
 import static junit.framework.Assert.assertNotNull;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener{
     //Logging
     private final LatLng DRAKE_UNIVERSITY = new LatLng(41.6013800, -93.6518900);
     private static final String TAG = MapsActivity.class.getSimpleName();
@@ -78,7 +82,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private BottomSheetBehavior mBottomSheetBehavior; //TODO: use this for the WifiList
 
     //Sensors
-    SensorManager mSensorManager;
+    private final SensorManager mSensorManager;
+    private final Sensor mAccelerometer;
+    private final Sensor mMagnetometer;
+    private final Sensor mRotationMeter;
 
     //Wifi list
     private List<WifiItem> mWifiList;
@@ -141,6 +148,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
+    public MapsActivity(){
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mRotationMeter = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+    }
+
     @Override
     @SuppressWarnings({"MissingPermission"})
     protected void onPause() {
@@ -153,6 +167,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mLocationManager != null){
             //do not put permission here it will end up in an infinite loop
             mLocationManager.removeUpdates(mLocationListener);
+        }
+
+        if (mSensorManager != null){
+            mSensorManager.unregisterListener(this);
         }
         super.onPause();
     }
@@ -190,6 +208,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Initialize the wifi Broadcaster
         wifiScan();
         askPermission();
+
     }
 
     private void enableCurrentLocationUI(){
@@ -228,6 +247,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initializeSensors(){
         getCurrentLongLat();
         wifiScan();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -288,8 +313,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.addMarker(new MarkerOptions().position(DRAKE_UNIVERSITY).title("Drake University! Yay!"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(drakeUniversity));
+//        mMap.addMarker(new MarkerOptions().position(DRAKE_UNIVERSITY).title("Drake University! Yay!"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(drakeUniversity));
         setCameraPosition(DRAKE_UNIVERSITY);
         enableCurrentLocationUI();
     }
@@ -317,5 +342,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .zoom(15)              // Sets the zoom
                 .build();              // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

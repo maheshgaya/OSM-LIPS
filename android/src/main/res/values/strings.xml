@@ -1,10 +1,14 @@
 <resources>
-    <string name="app_name">LIPS With Maps</string>
+    <string name="app_name">Indoor GPS</string>
 
     <!-- Wifi information -->
     <string name="wifi_level">Level</string>
     <string name="wifi_ssid">SSID</string>
     <string name="wifi_bssid">BSSID</string>
+
+    <!-- menu action -->
+    <string name="details">Details</string>
+    <string name="upload">Upload</string>
 
     <!-- strings for permissions -->
     <string name="permission_location_rationale">Location permission required for this app to work!</string>

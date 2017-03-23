@@ -33,7 +33,7 @@
 
     <!-- add bottom sheet -->
     <FrameLayout
-        android:elevation="4dp"
+        android:elevation="8dp"
         android:background="@android:color/white"
         android:id="@+id/bottomsheet_wifilist"
         android:minHeight="@dimen/bottom_sheet_min_height"
@@ -44,7 +44,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_sheet_height"
-                android:orientationMeter="vertical"
+                android:orientation="vertical"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingStart="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
@@ -65,7 +65,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientationMeter="horizontal"
+                    android:orientation="horizontal"
                     android:weightSum="5">
                     <TextView
                         android:text="@string/wifi_ssid"

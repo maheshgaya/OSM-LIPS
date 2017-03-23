@@ -41,7 +41,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -80,7 +83,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Binding views
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.recycleview_wifi) RecyclerView mWifiRecycleView;
-    @BindView(R.id.bottomsheet_wifilist)View mWifiListBottomSheet;
+    @BindView(R.id.bottomsheet_wifilist)FrameLayout mWifiListBottomSheet;
     @BindView(R.id.textview_current_location)TextView mCurrentLocationTextView;
     @BindView(R.id.main_coordinator_layout)CoordinatorLayout mCoordinatorLayout;
     //endregion
@@ -187,6 +190,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(mToolbar);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.pref_general.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_details) {
+            if (mWifiListBottomSheet.getVisibility() == View.VISIBLE){
+                mWifiListBottomSheet.setVisibility(View.GONE);
+            } else {
+                mWifiListBottomSheet.setVisibility(View.VISIBLE);
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Initializes the views and ask for permission
      * @param savedInstanceState
@@ -217,6 +245,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Initialize the wifi Broadcaster
         wifiScan();
         askPermission();
+        mWifiListBottomSheet.setVisibility(View.GONE);
 
     }
 

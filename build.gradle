@@ -26,3 +26,6 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+project.ext.design_library_version = '25.3.0'
+project.ext.google_services_version = '10.2.1'

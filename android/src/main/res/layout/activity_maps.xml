@@ -39,33 +39,44 @@
         android:minHeight="@dimen/bottom_sheet_min_height"
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="54dp"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_sheet_height"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingStart="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingEnd="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_horizontal_margin"
-                android:paddingBottom="@dimen/activity_horizontal_margin">
-
+                android:layout_height="match_parent"
+                android:orientation="vertical">
                 <TextView
+                    android:background="@color/colorPrimary"
+                    android:textColor="@android:color/white"
+                    android:padding="16dp"
+                    android:textStyle="bold"
+                    android:text="@string/reading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="4dp"/>
+                <TextView
+                    android:background="@color/colorPrimary"
                     android:id="@+id/textview_current_location"
+                    android:textColor="@android:color/white"
+                    android:paddingLeft="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="16dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
+                    android:layout_height="wrap_content"
+                    android:elevation="4dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:background="@color/colorGray300"
                     android:orientation="horizontal"
+                    android:elevation="4dp"
                     android:weightSum="5">
                     <TextView
                         android:text="@string/wifi_ssid"
@@ -87,10 +98,6 @@
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycleview_wifi"
                     android:layout_width="match_parent"

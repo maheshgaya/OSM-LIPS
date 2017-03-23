@@ -30,6 +30,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -46,6 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -86,6 +88,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @BindView(R.id.bottomsheet_wifilist)FrameLayout mWifiListBottomSheet;
     @BindView(R.id.textview_current_location)TextView mCurrentLocationTextView;
     @BindView(R.id.main_coordinator_layout)CoordinatorLayout mCoordinatorLayout;
+    private BottomSheetBehavior mBottomSheetBehavior;
     //endregion
 
     //region sensors
@@ -203,13 +206,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.pref_general.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_details) {
-            if (mWifiListBottomSheet.getVisibility() == View.VISIBLE){
-                mWifiListBottomSheet.setVisibility(View.GONE);
-            } else {
-                mWifiListBottomSheet.setVisibility(View.VISIBLE);
+        switch (id){
+            case R.id.action_details: {
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                break;
+            }
+            case R.id.action_upload:{
+                Toast.makeText(getApplicationContext(), "Upload Content", Toast.LENGTH_SHORT).show();
+                break;
             }
         }
         return super.onOptionsItemSelected(item);
@@ -245,9 +249,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Initialize the wifi Broadcaster
         wifiScan();
         askPermission();
-        mWifiListBottomSheet.setVisibility(View.GONE);
+        mBottomSheetBehavior = BottomSheetBehavior.from(mWifiListBottomSheet);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
     }
+
 
     /**
      * Registers the listeners for the different sensors

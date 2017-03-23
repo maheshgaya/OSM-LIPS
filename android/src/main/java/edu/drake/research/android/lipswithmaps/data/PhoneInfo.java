@@ -23,6 +23,7 @@ import java.io.Serializable;
  */
 
 public class PhoneInfo {
+    public static final String TABLE_NAME = "phone";
     private String product;
     private String sdkLevel;
     private String device;

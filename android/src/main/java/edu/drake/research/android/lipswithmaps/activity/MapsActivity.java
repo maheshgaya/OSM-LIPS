@@ -30,8 +30,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -66,41 +64,48 @@ import edu.drake.research.android.lipswithmaps.helper.Utils;
 import static junit.framework.Assert.assertNotNull;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener{
+    //region TAG
     //Logging
     private final LatLng DRAKE_UNIVERSITY = new LatLng(41.6013800, -93.6518900);
     private static final String TAG = MapsActivity.class.getSimpleName();
+    //endregion
 
+    //region constants
+    private static final String locationPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+    //Permissions
+    private static int LOCATION_REQUEST_CODE = 100;
+    //endregion
+
+    //region views
     //Binding views
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.recycleview_wifi) RecyclerView mWifiRecycleView;
     @BindView(R.id.bottomsheet_wifilist)View mWifiListBottomSheet;
     @BindView(R.id.textview_current_location)TextView mCurrentLocationTextView;
     @BindView(R.id.main_coordinator_layout)CoordinatorLayout mCoordinatorLayout;
+    //endregion
 
-    //Views
-    private BottomSheetBehavior mBottomSheetBehavior; //TODO: use this for the WifiList
-
-    //Sensors
-    private final SensorManager mSensorManager;
+    //region sensors
+    //Sensors - Accelerometer, magnetic
+    private SensorManager mSensorManager;
     /* Measures the acceleration force in m/s2 that is applied to a device on all
     three physical axes (x, y, and z), including the force of gravity.*/
-    private final Sensor mAccelerometer;
+    private Sensor mAccelerometer;
     /* Measures the ambient geomagnetic field for all three physical axes (x, y, z) in μT. */
-    private final Sensor mMagnetometer;
+    private Sensor mMagnetometer;
     /* Measures the orientation of a device by providing the three elements of the device's rotation vector. */
-    private final Sensor mRotationMeter;
+    private Sensor mOrientationMeter;
+    //endregion
 
+    //region Map
+    //Map variables
+    private GoogleMap mMap;
+    //endregion
+
+    //region wifi
     //Wifi list
     private List<WifiItem> mWifiList;
     private WifiAdapter mWifiAdapter;
-
-    //Map variables
-    private GoogleMap mMap;
-
-    //Permissions
-    private static int LOCATION_REQUEST_CODE = 100;
-    String locationPermission = Manifest.permission.ACCESS_FINE_LOCATION;
-
     //Wifi variables
     private List<ScanResult> mWifiScanResults;
     private WifiManager mWifiManager;
@@ -119,14 +124,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     };
+    //endregion
 
+    //region location manager
     //Location variables
     LocationManager mLocationManager; //get the location of the user with accuracy
     Location mLocation; //will contain the longitude and latitude obtained
     android.location.LocationListener mLocationListener = new android.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            //TODO: Save this data
             mLocation = location;
             mCurrentLocationTextView.setText("Time: " + Utils.getFriendlyDateTime(location.getTime()) +
                     "\nLongitude: " + location.getLongitude() +
@@ -150,14 +156,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     };
+    //endregion
 
-    public MapsActivity(){
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        mRotationMeter = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-    }
-
+    //region Lifecycle methods
     @Override
     @SuppressWarnings({"MissingPermission"})
     protected void onPause() {
@@ -178,12 +179,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onPause();
     }
 
-
+    /**
+     * Sets up the toolbar
+     */
     private void setupToolbar(){
         //shows Action bar
         setSupportActionBar(mToolbar);
     }
-
 
     /**
      * Initializes the views and ask for permission
@@ -195,20 +197,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
         setupToolbar();
-        //Initialize the views
-        mBottomSheetBehavior = new BottomSheetBehavior().from(mWifiListBottomSheet);
-        mBottomSheetBehavior.setPeekHeight((int) getResources().getDimension(R.dimen.bottom_sheet_min_height));
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+        initSensors();
 
         //Initialize the containers and wifi adapters
         mWifiList = new ArrayList<>();
@@ -229,24 +218,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         wifiScan();
         askPermission();
 
-
-
     }
 
-    private void enableCurrentLocationUI(){
-        if (ContextCompat.checkSelfPermission(this, locationPermission)
-                == PackageManager.PERMISSION_GRANTED) {
-            if (mMap != null) {
-                mMap.setMyLocationEnabled(true);
-            }
+    /**
+     * Registers the listeners for the different sensors
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mOrientationMeter, SensorManager.SENSOR_DELAY_NORMAL);
 
-        }
     }
+    //endregion
 
-
+    //region Location methods
+    /**
+     * Gets the current location
+     */
     private void getCurrentLongLat() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         //Check permission
         // Register the listener with the Location Manager to receive location updates
         if (ContextCompat.checkSelfPermission(this, locationPermission)
@@ -257,36 +249,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
+    //endregion
 
-    private void askPermission(){
-        if (ContextCompat.checkSelfPermission(this, locationPermission)
-                == PackageManager.PERMISSION_GRANTED) {
-            initializeSensors();
-        } else {
-            showRationale();
-        }
-    }
-    private void initializeSensors(){
-        getCurrentLongLat();
-        wifiScan();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mRotationMeter, SensorManager.SENSOR_DELAY_NORMAL);
-
-    }
-
+    //region Permission methods
+    /**
+     * Based on Permission result, initialize the sensors or show rationale
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_REQUEST_CODE) {
             if (permissions.length == 1 &&
                     permissions[0].equals(locationPermission) &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initializeSensors();
+                initializePermittedSensors();
             } else {
                 //Permission was denied. Display an error message.
                 showRationale();
@@ -295,6 +273,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Shows rationale message
+     * @return
+     */
     private boolean showRationale(){
         // Should we show an explanation?
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -328,13 +310,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
+    /**
+     * Ask for permission
+     */
+    private void askPermission(){
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
+                == PackageManager.PERMISSION_GRANTED) {
+            initializePermittedSensors();
+        } else {
+            showRationale();
+        }
+    }
+    //endregion
+
+    //region WI-FI methods
+    /**
+     * get wifi scan
+     */
     private void wifiScan(){
         mWifiManager= (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         registerReceiver(mWifiScanReceiver,
                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         mWifiManager.startScan();
     }
+    //endregion
 
+    //region map methods
+    /**
+     * When map is ready, initialize the Map UI
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -344,6 +349,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         enableCurrentLocationUI();
     }
 
+    /**
+     * show current map UI
+     */
+    private void enableCurrentLocationUI(){
+        if (ContextCompat.checkSelfPermission(this, locationPermission)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
+            }
+
+        }
+    }
     /**
      * Set the camera zoom
      * @param latitude
@@ -368,7 +385,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();              // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+    //endregion
 
+    //region Sensor methods
+    /**
+     * Initializes wifi and location sensors after permission is asked
+     */
+    private void initializePermittedSensors(){
+        getCurrentLongLat();
+        wifiScan();
+    }
+
+    /**
+     * initialize the meter sensors and other
+     */
+    private void initSensors(){
+        mSensorManager = (SensorManager)getApplicationContext().getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mOrientationMeter = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+    }
     @Override
     public void onSensorChanged(SensorEvent event) {
         Log.d(TAG, "onSensorChanged: " + event.values + " -- " + event.sensor);
@@ -378,4 +414,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    //endregion
 }

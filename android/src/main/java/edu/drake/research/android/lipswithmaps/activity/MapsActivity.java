@@ -30,7 +30,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
-import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -52,7 +52,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +73,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //Binding views
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.recycleview_wifi) RecyclerView mWifiRecycleView;
-    @BindView(R.id.framelayout_wifilist)View mWifiListFrameLayout;
+    @BindView(R.id.bottomsheet_wifilist)View mWifiListBottomSheet;
     @BindView(R.id.textview_current_location)TextView mCurrentLocationTextView;
     @BindView(R.id.main_coordinator_layout)CoordinatorLayout mCoordinatorLayout;
 
@@ -83,8 +82,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     //Sensors
     private final SensorManager mSensorManager;
+    /* Measures the acceleration force in m/s2 that is applied to a device on all
+    three physical axes (x, y, and z), including the force of gravity.*/
     private final Sensor mAccelerometer;
+    /* Measures the ambient geomagnetic field for all three physical axes (x, y, z) in μT. */
     private final Sensor mMagnetometer;
+    /* Measures the orientation of a device by providing the three elements of the device's rotation vector. */
     private final Sensor mRotationMeter;
 
     //Wifi list
@@ -192,9 +195,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
         setupToolbar();
+        //Initialize the views
+        mBottomSheetBehavior = new BottomSheetBehavior().from(mWifiListBottomSheet);
+        mBottomSheetBehavior.setPeekHeight((int) getResources().getDimension(R.dimen.bottom_sheet_min_height));
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
+
+        //Initialize the containers and wifi adapters
         mWifiList = new ArrayList<>();
         mWifiAdapter = new WifiAdapter(mWifiList);
 
+        //Initialize the list view for the wifis
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         mWifiRecycleView.setLayoutManager(mLayoutManager);
         mWifiRecycleView.setItemAnimator(new DefaultItemAnimator());
@@ -208,6 +228,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //Initialize the wifi Broadcaster
         wifiScan();
         askPermission();
+
+
 
     }
 
@@ -253,6 +275,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mRotationMeter, SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     @Override
@@ -304,7 +329,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void wifiScan(){
-        mWifiManager= (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        mWifiManager= (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         registerReceiver(mWifiScanReceiver,
                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         mWifiManager.startScan();
@@ -346,7 +371,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        Log.d(TAG, "onSensorChanged: " + event.values + " -- " + event.sensor);
     }
 
     @Override

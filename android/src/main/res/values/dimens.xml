@@ -7,6 +7,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <!-- Wifi List -->
-    <dimen name="bottom_sheet_min_height">100dp</dimen>
+    <dimen name="bottom_sheet_min_height">20dp</dimen>
     <dimen name="bottom_sheet_height">300dp</dimen>
 </resources>

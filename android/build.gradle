@@ -30,6 +30,8 @@ dependencies {
     compile "com.google.android.gms:play-services-maps:$google_services_version"
     compile "com.google.android.gms:play-services-location:$google_services_version"
     compile "com.google.android.gms:play-services-places:$google_services_version"
+    compile "com.google.firebase:firebase-database:$firebase_version"
+    compile "com.google.firebase:firebase-auth:$firebase_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

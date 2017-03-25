@@ -10,30 +10,43 @@ import java.util.List;
  * This class is the way will we store data into the database
  */
 public class Post{
-    private int timeStamp;
+    public static final String TABLE_NAME = "Post";
+    private long timeStamp;
     private LocationLngLat location;
     private PhoneInfo user;
     private List<WifiItem> wifiItemList;
     private Magnetometer magnetometer;
-    private OrientationMeter orientationMeter;
+    private RotationMeter rotationMeter;
     private Accelerometer accelerometer;
 
-    public Post(int timeStamp, List<WifiItem> wifiItemList, LocationLngLat location,
-                Magnetometer magnetometer, OrientationMeter orientationMeter, PhoneInfo phoneInfo){
+    public Post(long timeStamp, List<WifiItem> wifiItemList, LocationLngLat location,
+                Accelerometer accelerometer, Magnetometer magnetometer,
+                RotationMeter rotationMeter, PhoneInfo phoneInfo){
         this.timeStamp = timeStamp;
         this.wifiItemList = wifiItemList;
         this.location = location;
+        this.accelerometer = accelerometer;
         this.magnetometer = magnetometer;
-        this.orientationMeter = orientationMeter;
+        this.rotationMeter = rotationMeter;
         this.user = phoneInfo;
 
     }
 
-    public int getTimeStamp() {
+    @Override
+    public String toString(){
+        StringBuilder wifiStringBuilder = new StringBuilder();
+        for (WifiItem wifiItem: wifiItemList){
+            wifiStringBuilder.append(wifiItem.toString() + ", ");
+        }
+        return timeStamp + ", " + wifiStringBuilder.toString() + ", " + accelerometer.toString() +
+                magnetometer.toString() + ", " + rotationMeter.toString() + ", " + location.toString();
+    }
+
+    public long getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(int timeStamp) {
+    public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
     }
 
@@ -69,11 +82,11 @@ public class Post{
         this.magnetometer = magnetometer;
     }
 
-    public OrientationMeter getOrientationMeter() {
-        return orientationMeter;
+    public RotationMeter getRotationMeter() {
+        return rotationMeter;
     }
 
-    public void setOrientationMeter(OrientationMeter orientationMeter) {
-        this.orientationMeter = orientationMeter;
+    public void setRotationMeter(RotationMeter rotationMeter) {
+        this.rotationMeter = rotationMeter;
     }
 }

@@ -16,6 +16,11 @@ public class LocationLngLat {
         this.accuracy = accuracy;
     }
 
+    @Override
+    public String toString(){
+        return latitude + " :: " + longitude + " :: " + accuracy;
+    }
+
     public double getLongitude() {
         return longitude;
     }

@@ -4,16 +4,21 @@ package edu.drake.research.android.lipswithmaps.data;
  * Created by Mahesh Gaya on 3/22/17.
  */
 
-public class OrientationMeter {
+public class RotationMeter {
     public static final String TABLE_NAME = "orientation";
     private double x;
     private double y;
     private double z;
 
-    public OrientationMeter(double x, double y, double z){
+    public RotationMeter(double x, double y, double z){
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    @Override
+    public String toString(){
+        return x + " :: " + y + " :: " + z;
     }
 
     public double getX() {

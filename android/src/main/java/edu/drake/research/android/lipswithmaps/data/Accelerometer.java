@@ -16,6 +16,11 @@ public class Accelerometer {
         this.z = z;
     }
 
+    @Override
+    public String toString(){
+        return x + " :: " + y + " :: " + z;
+    }
+
     public double getX() {
         return x;
     }

@@ -28,4 +28,5 @@ task clean(type: Delete) {
 }
 
 project.ext.design_library_version = '25.3.0'
-project.ext.google_services_version = '10.2.1'
+project.ext.google_services_version = '10.2.0'
+project.ext.firebase_version = '10.2.0';

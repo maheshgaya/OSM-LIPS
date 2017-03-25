@@ -30,6 +30,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -55,6 +56,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +71,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.drake.research.android.lipswithmaps.R;
 import edu.drake.research.android.lipswithmaps.adapter.WifiAdapter;
+import edu.drake.research.android.lipswithmaps.data.Accelerometer;
+import edu.drake.research.android.lipswithmaps.data.LocationLngLat;
+import edu.drake.research.android.lipswithmaps.data.Magnetometer;
+import edu.drake.research.android.lipswithmaps.data.RotationMeter;
+import edu.drake.research.android.lipswithmaps.data.Post;
 import edu.drake.research.android.lipswithmaps.data.WifiItem;
+import edu.drake.research.android.lipswithmaps.helper.DatabaseUtils;
 import edu.drake.research.android.lipswithmaps.helper.Utils;
 
 import static junit.framework.Assert.assertNotNull;
@@ -100,7 +114,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     /* Measures the ambient geomagnetic field for all three physical axes (x, y, z) in μT. */
     private Sensor mMagnetometer;
     /* Measures the orientation of a device by providing the three elements of the device's rotation vector. */
-    private Sensor mOrientationMeter;
+    private Sensor mRotationMeter;
+
+    /* Keeps values of the accelerometer */
+    private Accelerometer mAccelerometerValues;
+    /* Keeps values of the magnetometer */
+    private Magnetometer mMagnetometerValues;
+    /* Keeps values of the rotation */
+    private RotationMeter mRotationMeterValues;
     //endregion
 
     //region Map
@@ -108,7 +129,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     //endregion
 
-    //region wifi
+    //region Wi-Fi
     //Wifi list
     private List<WifiItem> mWifiList;
     private WifiAdapter mWifiAdapter;
@@ -130,6 +151,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     };
+    //endregion
+
+    //region Firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     //endregion
 
     //region location manager
@@ -167,7 +193,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     //region Lifecycle methods
     @Override
     @SuppressWarnings({"MissingPermission"})
-    protected void onPause() {
+    protected void onStop() {
         try {
             unregisterReceiver(mWifiScanReceiver);
         } catch (java.lang.IllegalArgumentException e){
@@ -182,7 +208,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mSensorManager != null){
             mSensorManager.unregisterListener(this);
         }
-        super.onPause();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+        super.onStop();
     }
 
     /**
@@ -193,6 +222,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(mToolbar);
     }
 
+    /**
+     * Creates menu on the toolbar
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -200,6 +234,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    /**
+     * Handles menu item click events
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -212,7 +251,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             }
             case R.id.action_upload:{
-                Toast.makeText(getApplicationContext(), "Upload Content", Toast.LENGTH_SHORT).show();
+                Post post = createPost();
+                if (post != null) {
+                    Log.d(TAG, "onReceive: " + post.toString());
+                } else {
+                    Log.d(TAG, "onReceive: post is null");
+                }
+                DatabaseUtils.uploadContent(post);
                 break;
             }
         }
@@ -228,6 +273,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
+        //connect to firebase
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener =  new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInAnonymously", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
         setupToolbar();
         initSensors();
 
@@ -259,14 +337,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * Registers the listeners for the different sensors
      */
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mOrientationMeter, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mRotationMeter, SensorManager.SENSOR_DELAY_NORMAL);
+        mAuth.addAuthStateListener(mAuthListener);
 
     }
     //endregion
+
+    /**
+     * Create a new post object to be store to database
+     * @return
+     */
+    public Post createPost(){
+        Long currentTimeMillis = System.currentTimeMillis();
+        if (mLocation == null || mAccelerometerValues == null ||
+                mMagnetometerValues == null || mRotationMeterValues == null ||
+                mWifiList == null) {
+            return null;
+        }
+        LocationLngLat location = new LocationLngLat(mLocation.getLatitude(),
+                mLocation.getLongitude(), mLocation.getAccuracy());
+        return new Post(currentTimeMillis, mWifiList, location,
+                mAccelerometerValues, mMagnetometerValues,
+                mRotationMeterValues, Utils.getPhoneInformation());
+
+    }
 
     //region Location methods
     /**
@@ -438,11 +536,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mSensorManager = (SensorManager)getApplicationContext().getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        mOrientationMeter = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mRotationMeter = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
     }
+
+    /**
+     * When sensors changes, update the values
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d(TAG, "onSensorChanged: " + event.values + " -- " + event.sensor);
+        switch (event.sensor.getType()){
+            case Sensor.TYPE_ACCELEROMETER:{
+                mAccelerometerValues = new Accelerometer(event.values[0], event.values[1], event.values[2]);
+                break;
+            }
+            case Sensor.TYPE_MAGNETIC_FIELD:{
+                mMagnetometerValues = new Magnetometer(event.values[0], event.values[1], event.values[2]);
+                break;
+            }
+            case Sensor.TYPE_ROTATION_VECTOR:{
+                mRotationMeterValues = new RotationMeter(event.values[0], event.values[1], event.values[2]);
+                break;
+            }
+
+        }
     }
 
     @Override

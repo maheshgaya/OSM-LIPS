@@ -4,20 +4,22 @@
    https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloWorld
 */
 
-package edu.drake.research.android.lipswithmaps.backend;
+package edu.drake.research.web.lipswithmaps.backend;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 public class MyServlet extends HttpServlet {
-    static Logger Log = Logger.getLogger("edu.drake.research.android.lipswithmaps.backend.MyServlet");
+    static Logger Log = Logger.getLogger("MyServlet");
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         resp.setContentType("text/plain");
         resp.getWriter().println("Please use the form to POST to this url");
+
     }
 
     @Override

@@ -27,6 +27,8 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-project.ext.design_library_version = '25.3.0'
-project.ext.google_services_version = '10.2.0'
-project.ext.firebase_version = '10.2.0';
+project.ext{
+    design_library_version = '25.3.0'
+    google_services_version = '10.2.0'
+    firebase_version = '10.2.0'
+}

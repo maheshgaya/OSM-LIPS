@@ -37,8 +37,8 @@ $ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore
 8. Enable `Anonymous` authentication in the Authentication menu.
 
 ## Setting up AppEngine
-[See this link](https://cloud.google.com/solutions/mobile/firebase-app-engine-android-studio)
-
+1. [See this link](https://cloud.google.com/solutions/mobile/firebase-app-engine-android-studio)
+2. Create a service account and download the key file (name it `service-account.json` ) to `backend/src/main/resources/service-account.json`
 
 ## Contributing to this project
 1. Fork this repository.

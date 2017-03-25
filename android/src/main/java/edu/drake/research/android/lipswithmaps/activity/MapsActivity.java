@@ -61,8 +61,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +72,8 @@ import edu.drake.research.android.lipswithmaps.adapter.WifiAdapter;
 import edu.drake.research.android.lipswithmaps.data.Accelerometer;
 import edu.drake.research.android.lipswithmaps.data.LocationLngLat;
 import edu.drake.research.android.lipswithmaps.data.Magnetometer;
+import edu.drake.research.android.lipswithmaps.data.Reading;
 import edu.drake.research.android.lipswithmaps.data.RotationMeter;
-import edu.drake.research.android.lipswithmaps.data.Post;
 import edu.drake.research.android.lipswithmaps.data.WifiItem;
 import edu.drake.research.android.lipswithmaps.helper.DatabaseUtils;
 import edu.drake.research.android.lipswithmaps.helper.Utils;
@@ -165,12 +163,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     android.location.LocationListener mLocationListener = new android.location.LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            Toast.makeText(getApplicationContext(), "Location is updated", Toast.LENGTH_SHORT).show();
             mLocation = location;
             mCurrentLocationTextView.setText("Time: " + Utils.getFriendlyDateTime(location.getTime()) +
                     "\nLongitude: " + location.getLongitude() +
                     "\t\tLatitude: " + location.getLatitude() +
                     "\nAccuracy: " + location.getAccuracy() +
                     "\t\tAltitude: " + location.getAltitude());
+            uploadContent();
         }
 
         @Override
@@ -251,13 +251,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             }
             case R.id.action_upload:{
-                Post post = createPost();
-                if (post != null) {
-                    Log.d(TAG, "onReceive: " + post.toString());
-                } else {
-                    Log.d(TAG, "onReceive: post is null");
-                }
-                DatabaseUtils.uploadContent(post);
+                uploadContent();
                 break;
             }
         }
@@ -347,11 +341,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     //endregion
 
+    //region Firebase
     /**
      * Create a new post object to be store to database
      * @return
      */
-    public Post createPost(){
+    private Reading createPost(){
         Long currentTimeMillis = System.currentTimeMillis();
         if (mLocation == null || mAccelerometerValues == null ||
                 mMagnetometerValues == null || mRotationMeterValues == null ||
@@ -360,11 +355,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         LocationLngLat location = new LocationLngLat(mLocation.getLatitude(),
                 mLocation.getLongitude(), mLocation.getAccuracy());
-        return new Post(currentTimeMillis, mWifiList, location,
+        return new Reading(currentTimeMillis, mWifiList, location,
                 mAccelerometerValues, mMagnetometerValues,
                 mRotationMeterValues, Utils.getPhoneInformation());
 
     }
+
+    /**
+     * Uploads content to Firebase database
+     */
+    private void uploadContent(){
+        Reading reading = createPost();
+        if (reading != null) {
+            Log.d(TAG, "onReceive: " + reading.toString());
+        } else {
+            Log.d(TAG, "onReceive: reading is null");
+        }
+        DatabaseUtils.uploadContent(reading);
+    }
+    //endregion
 
     //region Location methods
     /**
@@ -376,7 +385,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Register the listener with the Location Manager to receive location updates
         if (ContextCompat.checkSelfPermission(this, locationPermission)
                 == PackageManager.PERMISSION_GRANTED) {
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mLocationListener);
+            wifiScan();
         } else {
             askPermission();
         }
@@ -461,9 +471,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * get wifi scan
      */
     private void wifiScan(){
-        mWifiManager= (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        registerReceiver(mWifiScanReceiver,
-                new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        if (mWifiManager == null){
+            mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            registerReceiver(mWifiScanReceiver,
+                    new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        }
         mWifiManager.startScan();
     }
     //endregion

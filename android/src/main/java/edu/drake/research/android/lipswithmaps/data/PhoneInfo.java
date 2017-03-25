@@ -16,8 +16,6 @@
 
 package edu.drake.research.android.lipswithmaps.data;
 
-import java.io.Serializable;
-
 /**
  * Created by Mahesh Gaya on 1/29/17.
  */
@@ -25,13 +23,13 @@ import java.io.Serializable;
 public class PhoneInfo {
     public static final String TABLE_NAME = "phone";
     private String product;
-    private String sdkLevel;
+    private String sdklevel;
     private String device;
     private String model;
 
-    public PhoneInfo(String product, String sdkLevel, String device, String model){
+    public PhoneInfo(String product, String sdklevel, String device, String model){
         this.product = product;
-        this.sdkLevel = sdkLevel;
+        this.sdklevel = sdklevel;
         this.device = device;
         this.model = model;
     }
@@ -60,15 +58,15 @@ public class PhoneInfo {
         this.product = product;
     }
 
-    public String getSdkLevel() {
-        return sdkLevel;
+    public String getSdklevel() {
+        return sdklevel;
     }
 
-    public void setSdkLevel(String sdkLevel) {
-        this.sdkLevel = sdkLevel;
+    public void setSdklevel(String sdklevel) {
+        this.sdklevel = sdklevel;
     }
 
     public String toString(){
-        return this.product + " -- " + this.sdkLevel + " -- " + this.device + " -- " + this.model;
+        return this.product + " -- " + this.sdklevel + " -- " + this.device + " -- " + this.model;
     }
 }

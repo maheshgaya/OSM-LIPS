@@ -9,8 +9,9 @@ import java.util.List;
 /**
  * This class is the way will we store data into the database
  */
-public class Post{
-    public static final String TABLE_NAME = "Post";
+public class Reading {
+    public static final String TABLE_NAME = "reading";
+    //The variable names will reflect how the data will be stored in the database
     private long timestamp;
     private LocationLngLat location;
     private PhoneInfo user;
@@ -19,9 +20,9 @@ public class Post{
     private RotationMeter rotationmeter;
     private Accelerometer accelerometer;
 
-    public Post(long timestamp, List<WifiItem> wifilist, LocationLngLat location,
-                Accelerometer accelerometer, Magnetometer magnetometer,
-                RotationMeter rotationmeter, PhoneInfo phoneInfo){
+    public Reading(long timestamp, List<WifiItem> wifilist, LocationLngLat location,
+                   Accelerometer accelerometer, Magnetometer magnetometer,
+                   RotationMeter rotationmeter, PhoneInfo phoneInfo){
         this.timestamp = timestamp;
         this.wifilist = wifilist;
         this.location = location;

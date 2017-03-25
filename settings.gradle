@@ -1,1 +1,1 @@
-include ':android', ':machine-learning'
+include ':android', ':machine-learning', ':backend'

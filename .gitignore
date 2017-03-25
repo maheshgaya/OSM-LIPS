@@ -78,3 +78,5 @@ freeline/
 freeline_project_description.json
 
 gradle/wrapper/gradle-wrapper.properties
+
+backend/src/main/webapp/WEB-INF/Indoor GPS-2cc5a60b0862.json

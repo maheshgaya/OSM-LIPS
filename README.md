@@ -23,6 +23,23 @@ originally developed by [David Mascharka](https://github.com/davidmascharka), wh
 4. Run the project on an emulator or on your Android phone. (API >= 16)
 
 
+## Setting up Firebase
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click on `Create a new project`
+3. Give it a name and select your country. Next, click on `Create Project`
+4. Click on `Add Firebase to your Android app`
+5. Give it a package name
+6. To use Sign-in features, add a SHA-1 Fingerprint at the bottom, using this:
+```
+$ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore -list -v
+```
+7. Download the `google-services.json` to  the root directory of the android app `lips-with-maps/android/`
+8. Enable `Anonymous` authentication in the Authentication menu.
+
+## Setting up AppEngine
+[See this link](https://cloud.google.com/solutions/mobile/firebase-app-engine-android-studio)
+
+
 ## Contributing to this project
 1. Fork this repository.
 2. Write your fix or feature in your own repository.

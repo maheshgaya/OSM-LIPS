@@ -28,7 +28,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.drake.research.android.lipswithmaps.R;
-import edu.drake.research.android.lipswithmaps.data.WifiItem;
+import edu.drake.research.lipswithmaps.WifiItem;
 
 /**
  * Created by Mahesh Gaya on 1/15/17.

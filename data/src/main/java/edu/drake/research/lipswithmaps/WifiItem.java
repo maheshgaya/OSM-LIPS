@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package edu.drake.research.android.lipswithmaps.data;
+package edu.drake.research.lipswithmaps;
 
 /**
  * Created by Mahesh Gaya on 1/15/17.

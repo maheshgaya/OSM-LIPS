@@ -3,7 +3,7 @@ package edu.drake.research.android.lipswithmaps.helper;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import edu.drake.research.android.lipswithmaps.data.Reading;
+import edu.drake.research.lipswithmaps.Reading;
 
 /**
  * Created by Mahesh Gaya on 3/23/17.

@@ -1,4 +1,4 @@
-package edu.drake.research.android.lipswithmaps.data;
+package edu.drake.research.lipswithmaps;
 
 import java.util.List;
 

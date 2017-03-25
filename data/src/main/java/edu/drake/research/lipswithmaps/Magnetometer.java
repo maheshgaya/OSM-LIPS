@@ -1,4 +1,4 @@
-package edu.drake.research.android.lipswithmaps.data;
+package edu.drake.research.lipswithmaps;
 
 /**
  * Created by Mahesh Gaya on 3/22/17.

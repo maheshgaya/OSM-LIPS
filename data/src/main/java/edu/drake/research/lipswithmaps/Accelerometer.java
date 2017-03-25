@@ -1,16 +1,16 @@
-package edu.drake.research.android.lipswithmaps.data;
+package edu.drake.research.lipswithmaps;
 
 /**
  * Created by Mahesh Gaya on 3/22/17.
  */
 
-public class RotationMeter {
-    public static final String TABLE_NAME = "orientation";
+public class Accelerometer {
+    public static final String TABLE_NAME = "accelerometer";
     private double x;
     private double y;
     private double z;
 
-    public RotationMeter(double x, double y, double z){
+    public Accelerometer(double x, double y, double z){
         this.x = x;
         this.y = y;
         this.z = z;

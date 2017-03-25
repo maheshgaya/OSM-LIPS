@@ -69,14 +69,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.drake.research.android.lipswithmaps.R;
 import edu.drake.research.android.lipswithmaps.adapter.WifiAdapter;
-import edu.drake.research.android.lipswithmaps.data.Accelerometer;
-import edu.drake.research.android.lipswithmaps.data.LocationLngLat;
-import edu.drake.research.android.lipswithmaps.data.Magnetometer;
-import edu.drake.research.android.lipswithmaps.data.Reading;
-import edu.drake.research.android.lipswithmaps.data.RotationMeter;
-import edu.drake.research.android.lipswithmaps.data.WifiItem;
 import edu.drake.research.android.lipswithmaps.helper.DatabaseUtils;
 import edu.drake.research.android.lipswithmaps.helper.Utils;
+import edu.drake.research.lipswithmaps.Accelerometer;
+import edu.drake.research.lipswithmaps.LocationLngLat;
+import edu.drake.research.lipswithmaps.Magnetometer;
+import edu.drake.research.lipswithmaps.Reading;
+import edu.drake.research.lipswithmaps.RotationMeter;
+import edu.drake.research.lipswithmaps.WifiItem;
 
 import static junit.framework.Assert.assertNotNull;
 

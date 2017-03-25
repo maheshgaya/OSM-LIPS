@@ -21,7 +21,7 @@ import android.util.Log;
 
 import java.text.SimpleDateFormat;
 
-import edu.drake.research.android.lipswithmaps.data.PhoneInfo;
+import edu.drake.research.lipswithmaps.PhoneInfo;
 
 /**
  * Created by Mahesh Gaya on 1/29/17.

@@ -11,23 +11,23 @@ import java.util.List;
  */
 public class Post{
     public static final String TABLE_NAME = "Post";
-    private long timeStamp;
+    private long timestamp;
     private LocationLngLat location;
     private PhoneInfo user;
-    private List<WifiItem> wifiItemList;
+    private List<WifiItem> wifilist;
     private Magnetometer magnetometer;
-    private RotationMeter rotationMeter;
+    private RotationMeter rotationmeter;
     private Accelerometer accelerometer;
 
-    public Post(long timeStamp, List<WifiItem> wifiItemList, LocationLngLat location,
+    public Post(long timestamp, List<WifiItem> wifilist, LocationLngLat location,
                 Accelerometer accelerometer, Magnetometer magnetometer,
-                RotationMeter rotationMeter, PhoneInfo phoneInfo){
-        this.timeStamp = timeStamp;
-        this.wifiItemList = wifiItemList;
+                RotationMeter rotationmeter, PhoneInfo phoneInfo){
+        this.timestamp = timestamp;
+        this.wifilist = wifilist;
         this.location = location;
         this.accelerometer = accelerometer;
         this.magnetometer = magnetometer;
-        this.rotationMeter = rotationMeter;
+        this.rotationmeter = rotationmeter;
         this.user = phoneInfo;
 
     }
@@ -35,19 +35,19 @@ public class Post{
     @Override
     public String toString(){
         StringBuilder wifiStringBuilder = new StringBuilder();
-        for (WifiItem wifiItem: wifiItemList){
+        for (WifiItem wifiItem: wifilist){
             wifiStringBuilder.append(wifiItem.toString() + ", ");
         }
-        return timeStamp + ", " + wifiStringBuilder.toString() + ", " + accelerometer.toString() +
-                magnetometer.toString() + ", " + rotationMeter.toString() + ", " + location.toString();
+        return timestamp + ", " + wifiStringBuilder.toString() + ", " + accelerometer.toString() +
+                magnetometer.toString() + ", " + rotationmeter.toString() + ", " + location.toString();
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public LocationLngLat getLocation() {
@@ -66,12 +66,12 @@ public class Post{
         this.user = user;
     }
 
-    public List<WifiItem> getWifiItemList() {
-        return wifiItemList;
+    public List<WifiItem> getWifilist() {
+        return wifilist;
     }
 
-    public void setWifiItemList(List<WifiItem> wifiItemList) {
-        this.wifiItemList = wifiItemList;
+    public void setWifilist(List<WifiItem> wifilist) {
+        this.wifilist = wifilist;
     }
 
     public Magnetometer getMagnetometer() {
@@ -82,11 +82,11 @@ public class Post{
         this.magnetometer = magnetometer;
     }
 
-    public RotationMeter getRotationMeter() {
-        return rotationMeter;
+    public RotationMeter getRotationmeter() {
+        return rotationmeter;
     }
 
-    public void setRotationMeter(RotationMeter rotationMeter) {
-        this.rotationMeter = rotationMeter;
+    public void setRotationmeter(RotationMeter rotationmeter) {
+        this.rotationmeter = rotationmeter;
     }
 }

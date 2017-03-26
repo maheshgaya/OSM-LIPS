@@ -10,6 +10,10 @@ public class RotationMeter {
     private double y;
     private double z;
 
+    public RotationMeter(){
+        this.x = this.y = this.z = 0;
+    }
+
     public RotationMeter(double x, double y, double z){
         this.x = x;
         this.y = y;

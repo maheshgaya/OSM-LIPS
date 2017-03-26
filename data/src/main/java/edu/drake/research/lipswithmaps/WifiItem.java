@@ -25,6 +25,11 @@ public class WifiItem {
     private String bssid;
     private int level;
 
+    public WifiItem(){
+        this.ssid = "";
+        this.bssid = "";
+        this.level = 0;
+    }
     //Constructor
     public WifiItem(String ssid, String bssid, int level){
         this.ssid = ssid;

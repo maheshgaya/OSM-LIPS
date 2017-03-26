@@ -27,6 +27,7 @@ public class PhoneInfo {
     private String device;
     private String model;
 
+    public PhoneInfo(){}
     public PhoneInfo(String product, String sdklevel, String device, String model){
         this.product = product;
         this.sdklevel = sdklevel;

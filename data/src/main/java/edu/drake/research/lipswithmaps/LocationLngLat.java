@@ -6,9 +6,17 @@ package edu.drake.research.lipswithmaps;
 
 public class LocationLngLat {
     public static final String TABLE_NAME = "location";
+    public static final String LONGITUDE = "longitude";
+    public static final String LATITUDE = "latitude";
+    public static final String ACCURACY = "accuracy";
+
     private double longitude;
     private double latitude;
     private double accuracy;
+
+    public LocationLngLat(){
+        this.longitude = this.latitude = this.accuracy = 0;
+    }
 
     public LocationLngLat(double longitude, double latitude, double accuracy){
         this.longitude = longitude;

@@ -10,6 +10,10 @@ public class Accelerometer {
     private double y;
     private double z;
 
+    public Accelerometer(){
+        this.x = this.y = this.z = 0;
+    }
+
     public Accelerometer(double x, double y, double z){
         this.x = x;
         this.y = y;

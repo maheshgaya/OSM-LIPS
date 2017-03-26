@@ -10,6 +10,9 @@ public class Magnetometer {
     private double y;
     private double z;
 
+    public Magnetometer(){
+        this.x = this.y = this.z = 0;
+    }
     public Magnetometer(double x, double y, double z){
         this.x = x;
         this.y = y;

@@ -20,6 +20,8 @@ public class Reading {
     private RotationMeter rotationmeter;
     private Accelerometer accelerometer;
 
+    public Reading(){}
+
     public Reading(long timestamp, List<WifiItem> wifilist, LocationLngLat location,
                    Accelerometer accelerometer, Magnetometer magnetometer,
                    RotationMeter rotationmeter, PhoneInfo phoneInfo){

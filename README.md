@@ -46,7 +46,8 @@ $ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore
 3. Once it is ready and tested, pull a request to merge your code. 
 **Please make sure that you [rebase](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request) your repository before pulling a request.**
 
-##License
+## License
+
 Copyright 2017 Mahesh Gaya
 
    Licensed under the Apache License, Version 2.0 (the "License");

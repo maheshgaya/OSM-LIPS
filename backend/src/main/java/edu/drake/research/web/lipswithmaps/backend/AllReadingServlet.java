@@ -243,9 +243,6 @@ public class AllReadingServlet extends HttpServlet {
         StringBuilder output = new StringBuilder();
         List<WifiItem> wifiList = reading.getWifilist();
 
-        String newline = "\n";
-        String tab = "\t";
-
         int count = 0;
         for (WifiItem wifi: wifiList) {
             output.append("{\n");

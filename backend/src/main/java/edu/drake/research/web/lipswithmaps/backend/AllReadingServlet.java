@@ -42,9 +42,16 @@ import edu.drake.research.web.lipswithmaps.backend.constants.ServerConfig;
 
 public class AllReadingServlet extends HttpServlet {
     static Logger Log = Logger.getLogger("AllReadingServlet");
+    public static final String CSV_TYPE = "csv";
+    public static final String JSON_TYPE = "json";
+    public static final String FORMAT = "format";
     @Override
     protected void doGet(HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
+        String parameter = JSON_TYPE;
+        if (req.getParameterMap().containsKey(FORMAT)) {
+            parameter = req.getParameter(FORMAT);
+        }
         resp.setContentType("text/plain");
         //region Firebase Initialization
         InputStream serviceAccount = this.getClass().getResourceAsStream("/service-account.json");
@@ -63,10 +70,11 @@ public class AllReadingServlet extends HttpServlet {
 
         //region Firebase Query
         // Read only access
-        DatabaseReference ref = FirebaseDatabase
+        final DatabaseReference ref = FirebaseDatabase
                 .getInstance()
                 .getReference(Reading.TABLE_NAME);
         final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final String formatParameter = parameter;
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -74,10 +82,21 @@ public class AllReadingServlet extends HttpServlet {
                 //So decided to do it one by one with hardcoded strings
                 //TODO: Clean this up if can
                 Log.info("Count " + String.valueOf(dataSnapshot.getChildrenCount()));
+                int childrenCount = (int) dataSnapshot.getChildrenCount();
                 int count = 1;
+
+                if (childrenCount == 0) {
+                    try {
+                        String message = "{ \"error\": \"No data in the database\"}";
+                        resp.getWriter().println(message);
+                        Log.info(message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 for (DataSnapshot readingSnapshot: dataSnapshot.getChildren()) {
                     Log.info("COUNT" + count);
-                    count++;
                     //region Location
                     Log.info("LOCATION");
                     LocationLngLat location = new LocationLngLat();
@@ -163,16 +182,42 @@ public class AllReadingServlet extends HttpServlet {
                             accelerometer, magnetometer, rotationMeter, phoneInfo);
                     //endregion
 
-                    convertToJson(reading);
+                    String output = "";
+                    if (formatParameter.equals(CSV_TYPE)){
+                        output = convertToCSV(reading);
+                        try {
+                            resp.setHeader("Accept", "text/csv");
+                            resp.setHeader("Content-type", "text/csv");
+                            if (count == 1){
+                                resp.getWriter().print(csvHeader());
+                            }
+                            resp.getWriter().print(output);
+                        } catch (IOException e){
+                            e.printStackTrace();
+                        }
+                    } else {
+                        output = convertToJson(reading);
+                        resp.setHeader("Accept", "application/json");
+                        resp.setHeader("Content-type", "application/json");
 
-                    //region Write to Web Page
-                    try {
-                        resp.getWriter().println(reading.toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        //region Write to Web Page
+                        try {
+                            if (count == 1){
+                                resp.getWriter().println("{\n \"reading\" : [");
+                            }
+
+                            if (count == childrenCount) {
+                                resp.getWriter().println(output + "\n]\n}");
+                            } else if (count != 1){
+                                resp.getWriter().println(output + ",");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        //endregion
                     }
-                    //endregion
-
+                    count++;
                 }
 
                 countDownLatch.countDown();
@@ -194,7 +239,109 @@ public class AllReadingServlet extends HttpServlet {
 
     }
 
-    public JSONObject convertToJson(Reading reading){
-        return null;
+    public String convertToJson(Reading reading){
+        StringBuilder output = new StringBuilder();
+        List<WifiItem> wifiList = reading.getWifilist();
+
+        String newline = "\n";
+        String tab = "\t";
+
+        int count = 0;
+        for (WifiItem wifi: wifiList) {
+            output.append("{\n");
+
+            //User
+            if (reading.getUser() != null){
+                String device = "\"user_device\":\"" + reading.getUser().getDevice()+ "\",\n";
+                String model = "\"user_model\":\"" + reading.getUser().getModel()+ "\",\n";
+                String product = "\"user_product\":\"" + reading.getUser().getProduct()+ "\",\n";
+                String sdklevel = "\"user_sdklevel\":\"" + reading.getUser().getSdklevel()+ "\",\n";
+                String out = device + model + product + sdklevel;
+                output.append(out);
+            }
+
+            //magnetic
+            if (reading.getAccelerometer() != null) {
+                String x = "\"acceleration_x\":\"" + reading.getAccelerometer().getX() + "\",\n";
+                String y = "\"acceleration_y\":\"" + reading.getAccelerometer().getX() + "\",\n";
+                String z = "\"acceleration_z\":\"" + reading.getAccelerometer().getX() + "\",\n";
+                String out = x + y + z;
+                output.append(out);
+            }
+
+            //magnetic
+            if (reading.getMagnetometer() != null) {
+                String x = "\"magnetic_x\":\"" + reading.getMagnetometer().getX() + "\",\n";
+                String y = "\"magnetic_y\":\"" + reading.getMagnetometer().getX() + "\",\n";
+                String z = "\"magnetic_z\":\"" + reading.getMagnetometer().getX() + "\",\n";
+                String out = x + y + z;
+                output.append(out);
+
+            }
+
+            //rotation
+            if (reading.getRotationmeter() != null) {
+                String x = "\"rotation_x\":\"" + reading.getRotationmeter().getX() + "\",\n";
+                String y = "\"rotation_y\":\"" + reading.getRotationmeter().getX() + "\",\n";
+                String z = "\"rotation_z\":\"" + reading.getRotationmeter().getX() + "\",\n";
+                String out = x + y + z;
+                output.append(out);
+            }
+
+            //wifi
+            if (wifi != null){
+                String bssid = "\"wifi_bssid\":\"" + wifi.getBssid() + "\",\n";
+                String ssid = "\"wifi_ssid\":\"" + wifi.getSsid() + "\",\n";
+                String level = "\"wifi_level\":\"" + wifi.getLevel() + "\",\n";
+                String out = bssid + ssid + level;
+                output.append(out);
+            }
+
+            //location
+            if (reading.getLocation() != null) {
+                String longitude = "\"location_longitude\":\"" + reading.getLocation().getLongitude() + "\",\n";
+                String latitude = "\"location_latitude\":\"" + reading.getLocation().getLatitude() + "\",\n";
+                String accuracy = "\"location_accuracy\":\"" + reading.getLocation().getAccuracy() + "\"\n";
+                String out = longitude + latitude + accuracy;
+                output.append(out);
+            }
+
+            if (count == wifiList.size() - 1) {
+                output.append("}\n");
+            } else {
+                output.append("},\n");
+            }
+            count++;
+
+        }
+        return output.toString();
+    }
+
+    public String convertToCSV(Reading reading){
+        StringBuilder output = new StringBuilder();
+        List<WifiItem> wifiList = reading.getWifilist();
+        for (WifiItem wifi: wifiList) {
+            output.append(reading.getUser().getDevice() + ", " + reading.getUser().getModel() + ", " +
+                    reading.getUser().getProduct() + ", " + reading.getUser().getSdklevel() + ", " +
+                    reading.getAccelerometer().getX() + ", " + reading.getAccelerometer().getY() + ", " +
+                    reading.getAccelerometer().getZ() + ", " + reading.getMagnetometer().getX() + ", " +
+                    reading.getMagnetometer().getY() + ", " + reading.getMagnetometer().getZ() + ", " +
+                    reading.getRotationmeter().getX() + ", " + reading.getRotationmeter().getZ() + ", " +
+                    wifi.getBssid() + ", " + wifi.getSsid() + ", " + wifi.getLevel() + ", " +
+                    reading.getLocation().getLongitude() + ", " + reading.getLocation().getLatitude() + ", " +
+                    reading.getLocation().getAccuracy() + "\r\n"
+            );
+        }
+        return output.toString();
+    }
+
+    public String csvHeader(){
+        return "user_device, user_model, user_product, user_sdklevel, " +
+                "acceleration_x, acceleration_y, acceleration_z, " +
+                "magnetic_x, magnetic_y, magnetic_z, " +
+                "rotation_x, rotation_y, rotation_z, " +
+                "wifi_bssid, wifi_ssid, wifi_level, " +
+                "location_longitude, location_latitude, location_accuracy\r\n";
+
     }
 }

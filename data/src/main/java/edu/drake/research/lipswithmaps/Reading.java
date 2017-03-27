@@ -45,6 +45,14 @@ public class Reading {
                 magnetometer.toString() + ", " + rotationmeter.toString() + ", " + location.toString();
     }
 
+    public Accelerometer getAccelerometer() {
+        return accelerometer;
+    }
+
+    public void setAccelerometer(Accelerometer accelerometer) {
+        this.accelerometer = accelerometer;
+    }
+
     public long getTimestamp() {
         return timestamp;
     }

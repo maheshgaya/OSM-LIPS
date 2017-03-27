@@ -333,9 +333,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStart() {
         super.onStart();
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mRotationMeter, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(this, mRotationMeter, SensorManager.SENSOR_DELAY_FASTEST);
         mAuth.addAuthStateListener(mAuthListener);
 
     }

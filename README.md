@@ -48,7 +48,7 @@ $ keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore
 
 ## License
 
-Copyright 2017 Mahesh Gaya
+Copyright 2017 Mahesh Gaya, Joel Afriyie
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

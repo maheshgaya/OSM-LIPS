@@ -1,27 +1,20 @@
 package edu.drake.research.web.lipswithmaps.backend;
 
-import com.google.api.client.json.JsonParser;
-import com.google.appengine.repackaged.com.google.api.client.json.Json;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.appengine.repackaged.com.google.gson.GsonBuilder;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
@@ -31,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.drake.research.lipswithmaps.Accelerometer;
-import edu.drake.research.lipswithmaps.Constants;
 import edu.drake.research.lipswithmaps.LocationLngLat;
 import edu.drake.research.lipswithmaps.Magnetometer;
 import edu.drake.research.lipswithmaps.PhoneInfo;
@@ -182,10 +174,9 @@ public class AllReadingServlet extends HttpServlet {
                             e.printStackTrace();
                         }
                     } else {
-                        output = convertToJson(reading, count);
                         resp.setHeader("Accept", "application/json");
                         resp.setHeader("Content-type", "application/json");
-
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
                         //region Write to Web Page
                         try {
                             if (count == 1){
@@ -193,9 +184,9 @@ public class AllReadingServlet extends HttpServlet {
                             }
 
                             if (count == childrenCount) {
-                                resp.getWriter().println(output + "\n]\n}");
+                                resp.getWriter().print(gson.toJson(reading) + "]}");
                             } else if (count != 1){
-                                resp.getWriter().println(output + ",");
+                                resp.getWriter().println(gson.toJson(reading) + ",");
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -223,10 +214,6 @@ public class AllReadingServlet extends HttpServlet {
         }
         //endregion
 
-    }
-
-    public String convertToJson(Reading reading, int count){
-        return  "[ " + reading.toJSON() + " ]";
     }
 
     public String convertToCSV(Reading reading){

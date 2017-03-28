@@ -53,8 +53,4 @@ public class LocationLngLat {
         this.accuracy = accuracy;
     }
 
-    public String toJSON(){
-        return "{ \"" + TABLE_NAME + "\" : { \"longitude\" : \"" + longitude +
-                "\", \"latitude\" : \"" + latitude + "\", \"accuracy\" : \"" + accuracy + "\" } }";
-    }
 }

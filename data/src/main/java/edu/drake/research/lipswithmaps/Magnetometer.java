@@ -48,9 +48,4 @@ public class Magnetometer {
         this.z = z;
     }
 
-    public String toJSON(){
-        return "{ \"" + TABLE_NAME + "\" : { \"x\" : \"" + x +
-                "\", \"y\" : \"" + y + "\", \"z\" : \"" + z + "\" } }";
-    }
-
 }

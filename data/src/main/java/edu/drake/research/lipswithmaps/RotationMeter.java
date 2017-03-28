@@ -48,4 +48,9 @@ public class RotationMeter {
     public void setZ(double z) {
         this.z = z;
     }
+
+    public String toJSON(){
+        return "{ \"" + TABLE_NAME + "\" : { \"x\" : \"" + x +
+                "\", \"y\" : \"" + y + "\", \"z\" : \"" + z + "\" } }";
+    }
 }

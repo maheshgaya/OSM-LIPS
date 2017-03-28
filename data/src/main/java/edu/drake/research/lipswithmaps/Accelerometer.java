@@ -22,8 +22,14 @@ public class Accelerometer {
 
     @Override
     public String toString(){
-        return x + " :: " + y + " :: " + z;
+        return "Accelerometer [x=" + x + ", y=" + y + ", z=" + z + "];";
     }
+
+    public String toJSON(){
+        return "{ \"" + TABLE_NAME + "\" : { \"x\" : \"" + x +
+                "\", \"y\" : \"" + y + "\", \"z\" : \"" + z + "\" } }";
+    }
+
 
     public double getX() {
         return x;

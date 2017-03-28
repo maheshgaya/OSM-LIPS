@@ -1,5 +1,9 @@
 package edu.drake.research.web.lipswithmaps.backend;
 
+import com.google.api.client.json.JsonParser;
+import com.google.appengine.repackaged.com.google.api.client.json.Json;
+import com.google.appengine.repackaged.com.google.gson.Gson;
+import com.google.appengine.repackaged.com.google.gson.GsonBuilder;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
@@ -81,7 +85,6 @@ public class AllReadingServlet extends HttpServlet {
                 //Was always getting null value when referencing the data directly
                 //So decided to do it one by one with hardcoded strings
                 //TODO: Clean this up if can
-                Log.info("Count " + String.valueOf(dataSnapshot.getChildrenCount()));
                 int childrenCount = (int) dataSnapshot.getChildrenCount();
                 int count = 1;
 
@@ -89,69 +92,53 @@ public class AllReadingServlet extends HttpServlet {
                     try {
                         String message = "{ \"error\": \"No data in the database\"}";
                         resp.getWriter().println(message);
+
                         Log.info(message);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
+                Log.info("Count: " + dataSnapshot.getChildrenCount());
                 for (DataSnapshot readingSnapshot: dataSnapshot.getChildren()) {
-                    Log.info("COUNT" + count);
                     //region Location
-                    Log.info("LOCATION");
                     LocationLngLat location = new LocationLngLat();
                     if (readingSnapshot.child("location").getChildrenCount() > 0) {
                         location.setAccuracy(Double.parseDouble(readingSnapshot.child("location").child("accuracy").getValue().toString()));
                         location.setLatitude(Double.parseDouble(readingSnapshot.child("location").child("latitude").getValue().toString()));
                         location.setLongitude(Double.parseDouble(readingSnapshot.child("location").child("latitude").getValue().toString()));
-                        Log.info(readingSnapshot.child("location").child("accuracy").getValue().toString());
-                        Log.info(readingSnapshot.child("location").child("latitude").getValue().toString());
-                        Log.info(readingSnapshot.child("location").child("latitude").getValue().toString());
                     }
 
                     //endregion
 
                     //region Magnetometer
-                    Log.info("MAGNETOMETER");
                     Magnetometer magnetometer = new Magnetometer();
                     if (readingSnapshot.child("magnetometer").getChildrenCount() > 0) {
                         magnetometer.setX(Double.parseDouble(readingSnapshot.child("magnetometer").child("x").getValue().toString()));
                         magnetometer.setY(Double.parseDouble(readingSnapshot.child("magnetometer").child("y").getValue().toString()));
                         magnetometer.setZ(Double.parseDouble(readingSnapshot.child("magnetometer").child("z").getValue().toString()));
-                        Log.info(readingSnapshot.child("magnetometer").child("x").getValue().toString());
-                        Log.info(readingSnapshot.child("magnetometer").child("y").getValue().toString());
-                        Log.info(readingSnapshot.child("magnetometer").child("z").getValue().toString());
                     }
                     //endregion
 
                     //region RotationMeter
-                    Log.info("RotationMeter");
                     RotationMeter rotationMeter = new RotationMeter();
                     if (readingSnapshot.child("rotationmeter").getChildrenCount() > 0) {
                         rotationMeter.setX(Double.parseDouble(readingSnapshot.child("rotationmeter").child("x").getValue().toString()));
                         rotationMeter.setY(Double.parseDouble(readingSnapshot.child("rotationmeter").child("y").getValue().toString()));
                         rotationMeter.setZ(Double.parseDouble(readingSnapshot.child("rotationmeter").child("z").getValue().toString()));
-                        Log.info(readingSnapshot.child("rotationmeter").child("x").getValue().toString());
-                        Log.info(readingSnapshot.child("rotationmeter").child("y").getValue().toString());
-                        Log.info(readingSnapshot.child("rotationmeter").child("z").getValue().toString());
                     }
                     //endregion
 
                     //region Accelerometer
-                    Log.info("ACCELEROMETER");
                     Accelerometer accelerometer = new Accelerometer();
                     if (readingSnapshot.child("accelerometer").getChildrenCount() > 0){
                         accelerometer.setX(Double.parseDouble(readingSnapshot.child("accelerometer").child("x").getValue().toString()));
                         accelerometer.setY(Double.parseDouble(readingSnapshot.child("accelerometer").child("y").getValue().toString()));
                         accelerometer.setZ(Double.parseDouble(readingSnapshot.child("accelerometer").child("z").getValue().toString()));
-                        Log.info(readingSnapshot.child("accelerometer").child("x").getValue().toString());
-                        Log.info(readingSnapshot.child("accelerometer").child("y").getValue().toString());
-                        Log.info(readingSnapshot.child("accelerometer").child("z").getValue().toString());
                     }
                     //endregion
 
                     //region PhoneInfo
-                    Log.info("PHONE_INFO");
                     PhoneInfo phoneInfo = new PhoneInfo();
                     if (readingSnapshot.child("user").getChildrenCount() > 0){
                         phoneInfo.setModel(readingSnapshot.child("user").child("model").getValue().toString());
@@ -162,7 +149,6 @@ public class AllReadingServlet extends HttpServlet {
                     //endregion
 
                     //region Wi-Fi List
-                    Log.info("WI-FI LIST");
                     List<WifiItem> wifiList = new ArrayList<WifiItem>();
                     if (readingSnapshot.child("wifilist").getChildrenCount() > 0){
                         for (DataSnapshot wifi: readingSnapshot.child("wifilist").getChildren()) {
@@ -196,7 +182,7 @@ public class AllReadingServlet extends HttpServlet {
                             e.printStackTrace();
                         }
                     } else {
-                        output = convertToJson(reading);
+                        output = convertToJson(reading, count);
                         resp.setHeader("Accept", "application/json");
                         resp.setHeader("Content-type", "application/json");
 
@@ -239,79 +225,8 @@ public class AllReadingServlet extends HttpServlet {
 
     }
 
-    public String convertToJson(Reading reading){
-        StringBuilder output = new StringBuilder();
-        List<WifiItem> wifiList = reading.getWifilist();
-
-        int count = 0;
-        for (WifiItem wifi: wifiList) {
-            output.append("{\n");
-
-            //User
-            if (reading.getUser() != null){
-                String device = "\"user_device\":\"" + reading.getUser().getDevice()+ "\",\n";
-                String model = "\"user_model\":\"" + reading.getUser().getModel()+ "\",\n";
-                String product = "\"user_product\":\"" + reading.getUser().getProduct()+ "\",\n";
-                String sdklevel = "\"user_sdklevel\":\"" + reading.getUser().getSdklevel()+ "\",\n";
-                String out = device + model + product + sdklevel;
-                output.append(out);
-            }
-
-            //magnetic
-            if (reading.getAccelerometer() != null) {
-                String x = "\"acceleration_x\":\"" + reading.getAccelerometer().getX() + "\",\n";
-                String y = "\"acceleration_y\":\"" + reading.getAccelerometer().getX() + "\",\n";
-                String z = "\"acceleration_z\":\"" + reading.getAccelerometer().getX() + "\",\n";
-                String out = x + y + z;
-                output.append(out);
-            }
-
-            //magnetic
-            if (reading.getMagnetometer() != null) {
-                String x = "\"magnetic_x\":\"" + reading.getMagnetometer().getX() + "\",\n";
-                String y = "\"magnetic_y\":\"" + reading.getMagnetometer().getX() + "\",\n";
-                String z = "\"magnetic_z\":\"" + reading.getMagnetometer().getX() + "\",\n";
-                String out = x + y + z;
-                output.append(out);
-
-            }
-
-            //rotation
-            if (reading.getRotationmeter() != null) {
-                String x = "\"rotation_x\":\"" + reading.getRotationmeter().getX() + "\",\n";
-                String y = "\"rotation_y\":\"" + reading.getRotationmeter().getX() + "\",\n";
-                String z = "\"rotation_z\":\"" + reading.getRotationmeter().getX() + "\",\n";
-                String out = x + y + z;
-                output.append(out);
-            }
-
-            //wifi
-            if (wifi != null){
-                String bssid = "\"wifi_bssid\":\"" + wifi.getBssid() + "\",\n";
-                String ssid = "\"wifi_ssid\":\"" + wifi.getSsid() + "\",\n";
-                String level = "\"wifi_level\":\"" + wifi.getLevel() + "\",\n";
-                String out = bssid + ssid + level;
-                output.append(out);
-            }
-
-            //location
-            if (reading.getLocation() != null) {
-                String longitude = "\"location_longitude\":\"" + reading.getLocation().getLongitude() + "\",\n";
-                String latitude = "\"location_latitude\":\"" + reading.getLocation().getLatitude() + "\",\n";
-                String accuracy = "\"location_accuracy\":\"" + reading.getLocation().getAccuracy() + "\"\n";
-                String out = longitude + latitude + accuracy;
-                output.append(out);
-            }
-
-            if (count == wifiList.size() - 1) {
-                output.append("}\n");
-            } else {
-                output.append("},\n");
-            }
-            count++;
-
-        }
-        return output.toString();
+    public String convertToJson(Reading reading, int count){
+        return  "[ " + reading.toJSON() + " ]";
     }
 
     public String convertToCSV(Reading reading){
@@ -337,7 +252,7 @@ public class AllReadingServlet extends HttpServlet {
                 "acceleration_x, acceleration_y, acceleration_z, " +
                 "magnetic_x, magnetic_y, magnetic_z, " +
                 "rotation_x, rotation_y, rotation_z, " +
-                "wifi_bssid, wifi_ssid, wifi_level, " +
+                "wifi_bssid, wifi_ssid, wifi_level, " + //TODO Convert this into BSSID
                 "location_longitude, location_latitude, location_accuracy\r\n";
 
     }

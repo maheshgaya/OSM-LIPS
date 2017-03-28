@@ -65,4 +65,9 @@ public class WifiItem {
     public String toString(){
         return this.bssid + " -- " + this.ssid + " -- " + this.level;
     }
+
+    public String toJSON(){
+        return "{ \"bssid\" : \"" + bssid +
+                "\", \"ssid\" : \"" + ssid + "\", \"level\" : \"" + level + "\" }";
+    }
 }

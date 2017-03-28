@@ -6,7 +6,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>AllReadingServlet</servlet-name>
-        <url-pattern>/readings/all</url-pattern>
+        <url-pattern>/readings</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

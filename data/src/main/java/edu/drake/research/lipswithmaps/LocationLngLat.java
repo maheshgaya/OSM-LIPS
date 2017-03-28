@@ -52,4 +52,9 @@ public class LocationLngLat {
     public void setAccuracy(double accuracy) {
         this.accuracy = accuracy;
     }
+
+    public String toJSON(){
+        return "{ \"" + TABLE_NAME + "\" : { \"longitude\" : \"" + longitude +
+                "\", \"latitude\" : \"" + latitude + "\", \"accuracy\" : \"" + accuracy + "\" } }";
+    }
 }

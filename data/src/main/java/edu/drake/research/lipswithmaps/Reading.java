@@ -100,4 +100,27 @@ public class Reading {
     public void setRotationmeter(RotationMeter rotationmeter) {
         this.rotationmeter = rotationmeter;
     }
+
+    public String toJSON(){
+        StringBuilder readingJson = new StringBuilder();
+        String sensors = accelerometer.toJSON() + ", " + magnetometer.toJSON() + ", " +
+                rotationmeter.toJSON() + ", " + user.toJSON() + ", " + location.toJSON() + ", " +
+                "{ \"wifilist\" :[ ";
+        readingJson.append(sensors);
+        int count = 0;
+        int max = wifilist.size();
+        for (WifiItem wifiItem: wifilist){
+            String wifi;
+            if (count < max - 1) {
+                wifi = wifiItem.toJSON() + ", ";
+            } else {
+                wifi = wifiItem.toJSON();
+            }
+            readingJson.append(wifi);
+            count++;
+        }
+
+        readingJson.append("] }");
+        return readingJson.toString();
+    }
 }

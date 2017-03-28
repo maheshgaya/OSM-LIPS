@@ -67,7 +67,14 @@ public class PhoneInfo {
         this.sdklevel = sdklevel;
     }
 
+    @Override
     public String toString(){
         return this.product + " -- " + this.sdklevel + " -- " + this.device + " -- " + this.model;
     }
+
+    public String toJSON(){
+        return "{ \"" + TABLE_NAME + "\" : { \"device\" : \"" + device + "\", \"product\" : \"" + product +
+                "\", \"model\" : \"" + model + "\", \"sdklevel\" : \"" + sdklevel + "\" } }";
+    }
+
 }

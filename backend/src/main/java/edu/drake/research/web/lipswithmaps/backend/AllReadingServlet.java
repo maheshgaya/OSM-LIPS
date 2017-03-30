@@ -2,6 +2,8 @@ package edu.drake.research.web.lipswithmaps.backend;
 
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.google.appengine.repackaged.com.google.gson.GsonBuilder;
+import com.google.appengine.repackaged.com.google.gson.JsonObject;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
@@ -11,8 +13,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -48,7 +53,6 @@ public class AllReadingServlet extends HttpServlet {
         if (req.getParameterMap().containsKey(FORMAT)) {
             parameter = req.getParameter(FORMAT);
         }
-        resp.setContentType("text/plain");
         //region Firebase Initialization
         InputStream serviceAccount = this.getClass().getResourceAsStream("/service-account.json");
         FirebaseOptions options = new FirebaseOptions.Builder()
@@ -79,7 +83,6 @@ public class AllReadingServlet extends HttpServlet {
                 //TODO: Clean this up if can
                 int childrenCount = (int) dataSnapshot.getChildrenCount();
                 int count = 1;
-
                 if (childrenCount == 0) {
                     try {
                         String message = "{ \"error\": \"No data in the database\"}";
@@ -90,6 +93,8 @@ public class AllReadingServlet extends HttpServlet {
                         e.printStackTrace();
                     }
                 }
+
+                List<Reading> readingList = new ArrayList<>();
 
                 Log.info("Count: " + dataSnapshot.getChildrenCount());
                 for (DataSnapshot readingSnapshot: dataSnapshot.getChildren()) {
@@ -140,8 +145,9 @@ public class AllReadingServlet extends HttpServlet {
                     }
                     //endregion
 
+                    //map of unique ssid with BSSID
                     //region Wi-Fi List
-                    List<WifiItem> wifiList = new ArrayList<WifiItem>();
+                    List<WifiItem> wifiList = new ArrayList<>();
                     if (readingSnapshot.child("wifilist").getChildrenCount() > 0){
                         for (DataSnapshot wifi: readingSnapshot.child("wifilist").getChildren()) {
                             wifiList.add(new WifiItem(
@@ -164,9 +170,10 @@ public class AllReadingServlet extends HttpServlet {
                     if (formatParameter.equals(CSV_TYPE)){
                         output = convertToCSV(reading);
                         try {
-                            resp.setHeader("Accept", "text/csv");
-                            resp.setHeader("Content-type", "text/csv");
                             if (count == 1){
+                                resp.setHeader("Accept", "text/csv");
+                                resp.setHeader("Content-type", "text/csv");
+                                resp.setHeader("Content-Disposition","inline; filename=all_readings.csv");
                                 resp.getWriter().print(csvHeader());
                             }
                             resp.getWriter().print(output);
@@ -174,27 +181,25 @@ public class AllReadingServlet extends HttpServlet {
                             e.printStackTrace();
                         }
                     } else {
-                        resp.setHeader("Accept", "application/json");
-                        resp.setHeader("Content-type", "application/json");
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        //region Write to Web Page
-                        try {
-                            if (count == 1){
-                                resp.getWriter().println("{\n \"reading\" : [");
-                            }
-
-                            if (count == childrenCount) {
-                                resp.getWriter().print(gson.toJson(reading) + "]}");
-                            } else if (count != 1){
-                                resp.getWriter().println(gson.toJson(reading) + ",");
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        //endregion
+                            readingList.add(reading);
                     }
                     count++;
+                }
+
+                if (!formatParameter.equals(CSV_TYPE)){
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    //region Write to Web Page
+                    try {
+                        resp.setHeader("Accept", "application/json");
+                        resp.setHeader("Content-type", "application/json");
+                        resp.setHeader("Content-Disposition","inline; filename=all_readings.json");
+                        String json = "{ \"readings\" :" + gson.toJson(readingList) + "}";
+                        resp.getWriter().print(json);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    //endregion
                 }
 
                 countDownLatch.countDown();

@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
@@ -42,7 +44,7 @@ import edu.drake.research.web.lipswithmaps.backend.constants.ServerConfig;
  */
 
 public class AllReadingServlet extends HttpServlet {
-    static Logger Log = Logger.getLogger("AllReadingServlet");
+    private static Logger Log = Logger.getLogger("AllReadingServlet");
     public static final String CSV_TYPE = "csv";
     public static final String JSON_TYPE = "json";
     public static final String FORMAT = "format";
@@ -87,16 +89,18 @@ public class AllReadingServlet extends HttpServlet {
                     try {
                         String message = "{ \"error\": \"No data in the database\"}";
                         resp.getWriter().println(message);
-
                         Log.info(message);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
 
+                Map<String, String> uniqueWifisMap =  new LinkedHashMap<>();
                 List<Reading> readingList = new ArrayList<>();
+                int wifiCount = 1;
 
                 Log.info("Count: " + dataSnapshot.getChildrenCount());
+
                 for (DataSnapshot readingSnapshot: dataSnapshot.getChildren()) {
                     //region Location
                     LocationLngLat location = new LocationLngLat();
@@ -145,16 +149,24 @@ public class AllReadingServlet extends HttpServlet {
                     }
                     //endregion
 
-                    //map of unique ssid with BSSID
+                    //map of unique bssid with BSSID<count>
                     //region Wi-Fi List
                     List<WifiItem> wifiList = new ArrayList<>();
                     if (readingSnapshot.child("wifilist").getChildrenCount() > 0){
                         for (DataSnapshot wifi: readingSnapshot.child("wifilist").getChildren()) {
-                            wifiList.add(new WifiItem(
-                                    wifi.child("ssid").getValue().toString(),
+                            WifiItem wifiItem = new WifiItem(wifi.child("ssid").getValue().toString(),
                                     wifi.child("bssid").getValue().toString(),
-                                    Integer.parseInt(wifi.child("level").getValue().toString())
-                            ));
+                                    Integer.parseInt(wifi.child("level").getValue().toString()));
+                            wifiList.add(wifiItem);
+
+                            //execute this only if format is CSV type and is not already contained in the hashmap
+                            if (formatParameter.equals(CSV_TYPE) &&
+                                    !uniqueWifisMap.containsKey(wifiItem.getBssid())) {
+                                String uniqueBssid = "BSSID" + wifiCount;
+                                uniqueWifisMap.put(wifiItem.getBssid(), uniqueBssid);
+                                Log.info(uniqueWifisMap.get(wifiItem.getBssid()) + " -- " + wifiItem.getBssid());
+                                wifiCount++;
+                            }
                         }
                     }
                     //endregion
@@ -166,27 +178,24 @@ public class AllReadingServlet extends HttpServlet {
                             accelerometer, magnetometer, rotationMeter, phoneInfo);
                     //endregion
 
-                    String output = "";
-                    if (formatParameter.equals(CSV_TYPE)){
-                        output = convertToCSV(reading);
-                        try {
-                            if (count == 1){
-                                resp.setHeader("Accept", "text/csv");
-                                resp.setHeader("Content-type", "text/csv");
-                                resp.setHeader("Content-Disposition","inline; filename=all_readings.csv");
-                                resp.getWriter().print(csvHeader());
-                            }
-                            resp.getWriter().print(output);
-                        } catch (IOException e){
-                            e.printStackTrace();
-                        }
-                    } else {
-                            readingList.add(reading);
-                    }
+                    readingList.add(reading);
+
                     count++;
                 }
 
-                if (!formatParameter.equals(CSV_TYPE)){
+
+                if (formatParameter.equals(CSV_TYPE)){
+                    try {
+                        resp.setHeader("Accept", "text/csv");
+                        resp.setHeader("Content-type", "text/csv");
+                        resp.setHeader("Content-Disposition","inline; filename=all_readings.csv");
+                        resp.getWriter().print(csvHeader(uniqueWifisMap));
+                        resp.getWriter().print(convertToCSV(readingList, uniqueWifisMap));
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                } else{
                     Gson gson = new GsonBuilder().setPrettyPrinting().create();
                     //region Write to Web Page
                     try {
@@ -198,9 +207,10 @@ public class AllReadingServlet extends HttpServlet {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
                     //endregion
+
                 }
+
 
                 countDownLatch.countDown();
             }
@@ -221,31 +231,86 @@ public class AllReadingServlet extends HttpServlet {
 
     }
 
-    public String convertToCSV(Reading reading){
+    /**
+     * Loop through the reading list
+     * Output the reading values accordingly
+     * TODO: check the position of the wifi bssid, else set to 0.0
+     * @param readingList
+     * @return
+     */
+    public String convertToCSV(List<Reading> readingList, Map<String, String> uniqueReadingMap){
+        //if error occurred return empty string
+        if (uniqueReadingMap == null) return "";
+        if (readingList == null) return "";
+
+        //build the output
         StringBuilder output = new StringBuilder();
-        List<WifiItem> wifiList = reading.getWifilist();
-        for (WifiItem wifi: wifiList) {
-            output.append(reading.getUser().getDevice() + ", " + reading.getUser().getModel() + ", " +
-                    reading.getUser().getProduct() + ", " + reading.getUser().getSdklevel() + ", " +
+        for (Reading reading: readingList) {
+            List<WifiItem> wifiList = reading.getWifilist();
+            //compare it with the unique wifi hash map
+            //check if the wifi is there, if not set to 0.0
+            Integer[] wifiLevelArray = new Integer[uniqueReadingMap.size()];
+
+            //set everything to zero
+            for (int i = 0; i < wifiLevelArray.length; i++){
+                wifiLevelArray[i] = 0;
+            }
+
+            for (WifiItem wifi : wifiList) {
+                String bssid = uniqueReadingMap.get(wifi.getBssid());
+                int count = Integer.parseInt(bssid.substring(5, bssid.length()));
+                //Since we start with 1 for the BSSID<count>, we need to remove 1
+                wifiLevelArray[count - 1] = wifi.getLevel();
+                Log.info("bssid [" + count + "] " + wifi.getLevel());
+
+            }
+            //build each row
+            StringBuilder levelBuilder = new StringBuilder();
+            for (Integer level: wifiLevelArray){
+                String levelStr = level + ", ";
+                levelBuilder.append(levelStr);
+            }
+            String out =
+                    //user's device information
+                    reading.getUser().getDevice() + ", " + reading.getUser().getModel() + ", " +
+                        reading.getUser().getProduct() + ", " + reading.getUser().getSdklevel() + ", " +
+
+                    //accelerometer
                     reading.getAccelerometer().getX() + ", " + reading.getAccelerometer().getY() + ", " +
-                    reading.getAccelerometer().getZ() + ", " + reading.getMagnetometer().getX() + ", " +
-                    reading.getMagnetometer().getY() + ", " + reading.getMagnetometer().getZ() + ", " +
-                    reading.getRotationmeter().getX() + ", " + reading.getRotationmeter().getZ() + ", " +
-                    wifi.getBssid() + ", " + wifi.getSsid() + ", " + wifi.getLevel() + ", " +
+                        reading.getAccelerometer().getZ() + ", " +
+
+                    //magnetometer
+                    reading.getMagnetometer().getX() + ", " +
+                            reading.getMagnetometer().getY() + ", " + reading.getMagnetometer().getZ() + ", " +
+                    reading.getRotationmeter().getX() + ", " +
+                            reading.getRotationmeter().getY() + ", " + reading.getRotationmeter().getZ() + ", " +
+
+                    //wifis
+                    levelBuilder.toString() +
+                            
+                    //location
                     reading.getLocation().getLongitude() + ", " + reading.getLocation().getLatitude() + ", " +
-                    reading.getLocation().getAccuracy() + "\r\n"
-            );
+                        reading.getLocation().getAccuracy() + "\r\n";
+            output.append(out);
+
         }
         return output.toString();
     }
 
-    public String csvHeader(){
-        return "user_device, user_model, user_product, user_sdklevel, " +
+    public String csvHeader(Map<String, String> uniqueWifisMap){
+        StringBuilder uniqueWifis = new StringBuilder();
+        for (String wifi: uniqueWifisMap.keySet()){
+            String bssid = uniqueWifisMap.get(wifi) + ", ";
+            uniqueWifis.append(bssid);
+        }
+        String retStr =  "user_device, user_model, user_product, user_sdklevel, " +
                 "acceleration_x, acceleration_y, acceleration_z, " +
                 "magnetic_x, magnetic_y, magnetic_z, " +
                 "rotation_x, rotation_y, rotation_z, " +
-                "wifi_bssid, wifi_ssid, wifi_level, " + //TODO Convert this into BSSID
+                uniqueWifis.toString() +
                 "location_longitude, location_latitude, location_accuracy\r\n";
+        Log.info(retStr);
+        return  retStr;
 
     }
 }

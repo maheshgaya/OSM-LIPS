@@ -61,6 +61,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +74,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import edu.drake.research.android.lipswithmaps.R;
 import edu.drake.research.android.lipswithmaps.adapter.WifiAdapter;
-import edu.drake.research.android.lipswithmaps.helper.DatabaseUtils;
 import edu.drake.research.android.lipswithmaps.helper.Utils;
 import edu.drake.research.lipswithmaps.Accelerometer;
 import edu.drake.research.lipswithmaps.LocationLngLat;
@@ -366,12 +370,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private void uploadContent(){
         Reading reading = createPost();
-        if (reading != null) {
-            Log.d(TAG, "onReceive: " + reading.toString());
-        } else {
+        if (reading == null) {
             Log.d(TAG, "onReceive: reading is null");
+            return;
         }
-        DatabaseUtils.uploadContent(reading);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(Reading.TABLE_NAME);
+        databaseReference = databaseReference.push();
+        databaseReference.setValue(reading);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange: " + dataSnapshot.getKey());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: " + databaseError.toString());
+            }
+        });
     }
     //endregion
 

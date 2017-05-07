@@ -131,7 +131,7 @@ public class AllReadingServlet extends HttpServlet {
                     if (readingSnapshot.child("location").getChildrenCount() > 0) {
                         location.setAccuracy(Double.parseDouble(readingSnapshot.child("location").child("accuracy").getValue().toString()));
                         location.setLatitude(Double.parseDouble(readingSnapshot.child("location").child("latitude").getValue().toString()));
-                        location.setLongitude(Double.parseDouble(readingSnapshot.child("location").child("latitude").getValue().toString()));
+                        location.setLongitude(Double.parseDouble(readingSnapshot.child("location").child("longitude").getValue().toString()));
                     }
 
                     //endregion
